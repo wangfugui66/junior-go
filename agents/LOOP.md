@@ -22,7 +22,7 @@ The **feedback edges** are what close the loop — without them it's just a pipe
 - **requirement-scout is gated** — only runs when the requirement is novel / greenfield / uncertain; its **KILL** verdict stops a pointless build *before any planning or code* (the cheapest bug to fix is the feature you never build).
 - **architect ↔ planner** — `REVISE` bounces the plan back; you adjudicate the rebuttal.
 - **tester → implementer** (code bug) / **→ planner** (design wrong) / **→ requirement-scout** (the root cause is a *wrong requirement*).
-- **irreversible → ROLLBACK**, **PASS → write memory**.
+- **irreversible → ROLLBACK**. And **tester PASS is not the finish line** — it means "built to spec", not "achieves the effect you wanted". So the real close is a **5-second acceptance checkpoint — you, not an agent**: PASS → you eyeball it → **accept** (write memory, done) **or reject** → route by *why*: wrong effect because the need/criteria were wrong → **scout** (REFRAME); right need but bad approach → **planner**. This is deliberately a human judgment, NOT a sixth stage (see Right-size it).
 
 ## The five roles
 
@@ -42,6 +42,24 @@ model. This is the article's "different model for the checker" — plus a cheape
 Note the **scout plays by a different grounding standard** than the code-side agents: it can't cite
 `file:line`, so it must cite **sources**, separate **verified from assumed**, and state **confidence** —
 the guard against a confident-but-hallucinated market claim producing a validated-*sounding* fake requirement.
+
+## Right-size it — the loop is a template you subset from, not an assembly line
+
+None of the five stages is *useless* — each is one of three irreducible operations: **decide** what/whether
+(scout, planner) · **build** (implementer) · **check** (architect, tester, + the acceptance checkpoint). But
+you almost never run all of them. The gates exist to keep the common path short — run the **fewest stages the
+task's blast radius justifies**:
+
+| Task | Stages you actually run |
+|---|---|
+| Trivial one-liner, no blast radius | just do the edit — **0 agents** |
+| Ordinary feature / fix | planner → implementer → tester — **3** |
+| Risky / complex / wide blast radius | + adversarial-architect — **4** |
+| Novel / greenfield / requirement in doubt | + requirement-scout at the front — **5** |
+| Outcome still in doubt after it's built | + the acceptance checkpoint (you) at the end |
+
+If the loop ever *feels* long, you're looking at its **maximal** form — subset it. ~90% of work is the
+3-stage path. Adding a stage is a deliberate response to risk, never a ritual.
 
 ## How to run it
 
