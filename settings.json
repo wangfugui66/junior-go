@@ -13,6 +13,9 @@
   "autoUpdatesChannel": "latest",
   "showThinkingSummaries": true,
   "theme": "dark",
-  "effortLevel": "xhigh",
-  "model": "opus[1m]"
+  "effortLevel": "max",
+  "model": "opus[1m]",
+  "permissions": {
+    "defaultMode": "acceptEdits"
+  }
 }
