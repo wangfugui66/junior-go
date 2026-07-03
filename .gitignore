@@ -1,0 +1,7 @@
+# ── 默认忽略 ~/.claude 下的一切 ──
+/*
+# ── 只放行这些可移植的规则/配置（敏感文件永不进仓库）──
+!/.gitignore
+!/CLAUDE.md
+!/agents/
+!/settings.json
