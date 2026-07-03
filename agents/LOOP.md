@@ -1,46 +1,56 @@
 # The Loop — a reusable closed-loop dev harness
 
-Four global sub-agents (`~/.claude/agents/*.md`) that split **generation** from **verification**
-and feed each other. This file is the operator's guide: how they wire together, the memory spine
-that makes it a *loop* and not a one-shot, and the Claude Code harness tips baked in.
+Five global sub-agents (`~/.claude/agents/*.md`) that split **problem validation**, **generation**,
+and **verification**, and feed each other. This file is the operator's guide: how they wire together,
+the memory spine that makes it a *loop* and not a one-shot, and the Claude Code harness tips baked in.
 
 > Loop engineering = you stop prompting the agent turn-by-turn and instead design the system that
-> prompts it. These four are block #5 (sub-agents) of that system. The memory spine below is block #6.
+> prompts it. These five are block #5 (sub-agents) of that system. The memory spine below is block #6.
 
 ## The loop
 
 ```
-   ┌─────────────────────────────────────────────────────────────┐
-   │                                                             ▼
-方案 plan-author ──plan──▶ 对抗评审 adversarial-architect ──VERDICT──▶ 执行 surgical-implementer
-   ▲                          │        ▲                                        │
-   │ REVISE (design wrong)    │ REVISE │ rebuttal (you adjudicate)              │ diff + commits
-   │                          ▼        │                                        ▼
-   └──────────────── 真跑验证 runtime-verifier ◀───────── PASS/FAIL/INCONCLUSIVE ┘
-        FAIL→implementer (code bug) │ FAIL→planner (design wrong) │ irreversible→ROLLBACK │ PASS→write memory
+调研证伪 requirement-scout ─spec─▶ 方案 plan-author ─plan─▶ 对抗评审 architect ─VERDICT─▶ 执行 implementer ─▶ 真跑验证 tester
+        │ (gated: novel/greenfield)     ▲                     ▲  │                          │                     │
+        │ KILL → 停(连 plan 都不排)       │ REVISE (设计错)      │  │ rebuttal (你裁决)          │ diff + commits      │
+        ▼                               └─────────────────────┘  └── "根子是需求错了" ◀──────┴── FAIL / irreversible / PASS
+      (停)                                                       (回灌终点是 scout,不是 planner)
 ```
 
-The **feedback edges** (architect↔planner, tester→implementer/planner, irreversible→rollback,
-PASS→memory) are what close the loop. Without them it's just a pipeline.
+The **feedback edges** are what close the loop — without them it's just a pipeline:
 
-## The four roles
+- **requirement-scout is gated** — only runs when the requirement is novel / greenfield / uncertain; its **KILL** verdict stops a pointless build *before any planning or code* (the cheapest bug to fix is the feature you never build).
+- **architect ↔ planner** — `REVISE` bounces the plan back; you adjudicate the rebuttal.
+- **tester → implementer** (code bug) / **→ planner** (design wrong) / **→ requirement-scout** (the root cause is a *wrong requirement*).
+- **irreversible → ROLLBACK**, **PASS → write memory**.
+
+## The five roles
 
 | Role | File | Fires when | Can mutate source? |
 |---|---|---|---|
+| 调研证伪 / scout | `requirement-scout.md` | **gated** — only when the requirement is novel/greenfield/uncertain; validate WHAT & WHY before any planning | no (research only) |
 | 方案 / planner | `plan-author.md` | start of any non-trivial task; or to REVISE after objections/failures | no (read-only) |
 | 对抗评审 / architect | `adversarial-architect.md` | after a plan exists, before code — falsify it (8-angle attack) | no (read-only) |
 | 执行 / implementer | `surgical-implementer.md` | only after adjudication settles the design | **yes** |
 | 真跑验证 / tester | `runtime-verifier.md` | after implementation lands — *runs* it, PASS/FAIL/INCONCLUSIVE | no (scratch only) |
 
-The architect runs on **opus** (a strong checker catches what a tired maker talked itself into);
-the rest inherit the session model. This is the article's "different model for the checker".
+**Models:** the **scout** and **architect** run on **opus** — both do hard adversarial / first-principles
+reasoning where a strong checker earns its cost. The **implementer** runs on **sonnet** (execution needs
+care and bug-spotting, not peak reasoning — cheaper and faster). Planner and tester inherit the session
+model. This is the article's "different model for the checker" — plus a cheaper model for the mechanical work.
+
+Note the **scout plays by a different grounding standard** than the code-side agents: it can't cite
+`file:line`, so it must cite **sources**, separate **verified from assumed**, and state **confidence** —
+the guard against a confident-but-hallucinated market claim producing a validated-*sounding* fake requirement.
 
 ## How to run it
 
-**Manual mode** (start here — you stay in the loop, low cost): in a session, ask for the
-`plan-author`, then hand its plan to `adversarial-architect`, adjudicate the objections yourself,
-hand the settled plan to `surgical-implementer`, then `runtime-verifier`. You are the orchestrator
-and the adjudicator — the single human checkpoint the article insists you keep.
+**Manual mode** (start here — you stay in the loop, low cost): if the requirement itself is uncertain
+or greenfield, start one step earlier with `requirement-scout` — a **KILL** verdict means you're done,
+you just saved yourself from building the wrong thing. Otherwise start at `plan-author`, hand its plan to
+`adversarial-architect`, adjudicate the objections yourself, hand the settled plan to `surgical-implementer`,
+then `runtime-verifier`. You are the orchestrator and the adjudicator — the single human checkpoint the
+article insists you keep.
 
 **Workflow mode** (once the flow is trustworthy): a deterministic script wires plan→review→
 (loop until PROCEED)→implement→verify→(loop until PASS), so you design it once and press go.

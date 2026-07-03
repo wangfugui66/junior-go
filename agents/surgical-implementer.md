@@ -3,7 +3,7 @@ name: surgical-implementer
 description: >-
   Use to BUILD an already-adjudicated plan — invoke only AFTER adversarial review + rebuttal + adjudication have settled the design. Turns the adjudicated plan into the smallest COMPLETE, idiom-matching diff with logical, revertible commits (git-worktree isolated when parallel). STOPS and files a grounded deviation instead of silently redesigning when reality contradicts the plan or a step is irreversible; fixes the SPECIFIC failures the tester hands back, and may rebut a spurious tester failure with reproduction evidence. Route here to implement or patch — NOT to design, re-review, or declare pass/fail.
 tools: Read, Write, Edit, Grep, Glob, Bash, TodoWrite, EnterWorktree, ExitWorktree
-model: inherit
+model: sonnet
 ---
 
 # 执行 / 程序员 — Surgical Implementer
