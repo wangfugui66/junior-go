@@ -1,11 +1,12 @@
 # The Loop — a reusable closed-loop dev harness
 
-Five global sub-agents (`~/.claude/agents/*.md`) that split **problem validation**, **generation**,
-and **verification**, and feed each other. This file is the operator's guide: how they wire together,
-the memory spine that makes it a *loop* and not a one-shot, and the Claude Code harness tips baked in.
+Six global sub-agents (`~/.claude/agents/*.md`) that split **problem validation**, **generation**,
+**verification**, and **human hand-off**, and feed each other. This file is the operator's guide: how
+they wire together, the memory spine that makes it a *loop* and not a one-shot, and the Claude Code
+harness tips baked in.
 
 > Loop engineering = you stop prompting the agent turn-by-turn and instead design the system that
-> prompts it. These five are block #5 (sub-agents) of that system. The memory spine below is block #6.
+> prompts it. These six are block #5 (sub-agents) of that system. The memory spine below is block #6.
 
 ## The loop
 
@@ -14,7 +15,13 @@ the memory spine that makes it a *loop* and not a one-shot, and the Claude Code 
         │ (gated: novel/greenfield)     ▲                     ▲  │                          │                     │
         │ KILL → 停(连 plan 都不排)       │ REVISE (设计错)      │  │ rebuttal (你裁决)          │ diff + commits      │
         ▼                               └─────────────────────┘  └── "根子是需求错了" ◀──────┴── FAIL / irreversible / PASS
-      (停)                                                       (回灌终点是 scout,不是 planner)
+      (停)                                                       (回灌终点是 scout,不是 planner)          │
+                                                                                                    PASS ▼
+                                                                                          验收简报 review-briefer
+                                                                                      (讲人话，不裁决，不是第七个verdict)
+                                                                                                          │
+                                                                                                          ▼
+                                                                                              你：5秒验收checkpoint
 ```
 
 The **feedback edges** are what close the loop — without them it's just a pipeline:
@@ -22,9 +29,10 @@ The **feedback edges** are what close the loop — without them it's just a pipe
 - **requirement-scout is gated** — only runs when the requirement is novel / greenfield / uncertain; its **KILL** verdict stops a pointless build *before any planning or code* (the cheapest bug to fix is the feature you never build).
 - **architect ↔ planner** — `REVISE` bounces the plan back; you adjudicate the rebuttal.
 - **tester → implementer** (code bug) / **→ planner** (design wrong) / **→ requirement-scout** (the root cause is a *wrong requirement*).
-- **irreversible → ROLLBACK**. And **tester PASS is not the finish line** — it means "built to spec", not "achieves the effect you wanted". So the real close is a **5-second acceptance checkpoint — you, not an agent**: PASS → you eyeball it → **accept** (write memory, done) **or reject** → route by *why*: wrong effect because the need/criteria were wrong → **scout** (REFRAME); right need but bad approach → **planner**. This is deliberately a human judgment, NOT a sixth stage (see Right-size it).
+- **irreversible → ROLLBACK**. And **tester PASS is not the finish line** — it means "built to spec", not "achieves the effect you wanted". So the real close is a **5-second acceptance checkpoint — you, not an agent**: PASS → you eyeball it → **accept** (write memory, done) **or reject** → route by *why*: wrong effect because the need/criteria were wrong → **scout** (REFRAME); right need but bad approach → **planner**. This is deliberately a human judgment, NOT a stage with its own verdict (see Right-size it).
+- **tester → review-briefer** (optional, on PASS) — if the diff isn't self-explanatory to you yet, review-briefer turns it into a plain-language brief *before* your checkpoint. It hands you material, not a ruling — the accept/reject call above is still 100% yours.
 
-## The five roles
+## The six roles
 
 | Role | File | Fires when | Can mutate source? |
 |---|---|---|---|
@@ -33,11 +41,13 @@ The **feedback edges** are what close the loop — without them it's just a pipe
 | 对抗评审 / architect | `adversarial-architect.md` | after a plan exists, before code — falsify it (8-angle attack) | no (read-only) |
 | 执行 / implementer | `surgical-implementer.md` | only after adjudication settles the design | **yes** |
 | 真跑验证 / tester | `runtime-verifier.md` | after implementation lands — *runs* it, PASS/FAIL/INCONCLUSIVE | no (scratch only) |
+| 验收简报 / review-briefer | `review-briefer.md` | **optional, after tester PASS**, right before your acceptance checkpoint — translates the settled diff + test evidence into a plain-language brief for someone who doesn't yet read code fluently | no (read-only, no verdict) |
 
 **Models:** the **scout** and **architect** run on **opus** — both do hard adversarial / first-principles
 reasoning where a strong checker earns its cost. The **implementer** runs on **sonnet** (execution needs
-care and bug-spotting, not peak reasoning — cheaper and faster). Planner and tester inherit the session
-model. This is the article's "different model for the checker" — plus a cheaper model for the mechanical work.
+care and bug-spotting, not peak reasoning — cheaper and faster). Planner, tester, and review-briefer
+inherit the session model — plain summarization/translation doesn't need the adversarial tier either.
+This is the article's "different model for the checker" — plus a cheaper model for the mechanical work.
 
 Note the **scout plays by a different grounding standard** than the code-side agents: it can't cite
 `file:line`, so it must cite **sources**, separate **verified from assumed**, and state **confidence** —
@@ -57,9 +67,13 @@ task's blast radius justifies**:
 | Risky / complex / wide blast radius | + adversarial-architect — **4** |
 | Novel / greenfield / requirement in doubt | + requirement-scout at the front — **5** |
 | Outcome still in doubt after it's built | + the acceptance checkpoint (you) at the end |
+| You can't yet read the diff fluently enough to run that checkpoint yourself | + review-briefer, right before the checkpoint |
 
 If the loop ever *feels* long, you're looking at its **maximal** form — subset it. ~90% of work is the
-3-stage path. Adding a stage is a deliberate response to risk, never a ritual.
+3-stage path. Adding a stage is a deliberate response to risk, never a ritual. review-briefer is the one
+exception worth defaulting to **on** rather than gating by risk: it's cheap, it never blocks the loop, and
+if you're still building fluency, skipping it just re-creates the comprehension debt the loop exists to
+avoid (see "Stay the engineer" below).
 
 ## How to run it
 
@@ -67,8 +81,9 @@ If the loop ever *feels* long, you're looking at its **maximal** form — subset
 or greenfield, start one step earlier with `requirement-scout` — a **KILL** verdict means you're done,
 you just saved yourself from building the wrong thing. Otherwise start at `plan-author`, hand its plan to
 `adversarial-architect`, adjudicate the objections yourself, hand the settled plan to `surgical-implementer`,
-then `runtime-verifier`. You are the orchestrator and the adjudicator — the single human checkpoint the
-article insists you keep.
+then `runtime-verifier`. On PASS, invoke `review-briefer` before you do your own accept/reject pass — it
+costs one cheap agent call and turns the diff into something you can actually read and learn from. You are
+the orchestrator and the adjudicator — the single human checkpoint the article insists you keep.
 
 **Workflow mode** (once the flow is trustworthy): a deterministic script wires plan→review→
 (loop until PROCEED)→implement→verify→(loop until PASS), so you design it once and press go.
@@ -129,3 +144,6 @@ Global-reusable core (#5 agents, #6 memory convention, the tips above) is done. 
 The loop changes the work, it doesn't delete you from it. Verification is still yours; comprehension
 debt grows faster the smoother the loop runs; the comfortable posture (take whatever it gives back) is
 the risky one. Design the loop to go faster on work you understand — not to avoid understanding it.
+`review-briefer` exists for exactly this: it doesn't lower the bar for what you need to understand, it
+lowers the cost of understanding it — a plain-language ramp onto the diff for whenever you're not yet
+fluent enough to read it cold.
