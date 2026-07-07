@@ -1,4 +1,4 @@
-# claude-loop-harness
+# junior-go
 
 English | [中文](README.zh-CN.md)
 
@@ -70,8 +70,8 @@ for why that matters).
 **Slash-command flow**, inside a Claude Code session:
 
 ```
-/plugin marketplace add wangfugui66/claude-loop-harness
-/plugin install claude-loop-harness@claude-loop-harness
+/plugin marketplace add wangfugui66/junior-go
+/plugin install junior-go@junior-go
 ```
 
 **Or the `settings.json` flow** — add both blocks below. This mirrors exactly how a plugin like
@@ -80,13 +80,13 @@ for why that matters).
 ```json
 {
   "enabledPlugins": {
-    "claude-loop-harness@claude-loop-harness": true
+    "junior-go@junior-go": true
   },
   "extraKnownMarketplaces": {
-    "claude-loop-harness": {
+    "junior-go": {
       "source": {
         "source": "github",
-        "repo": "wangfugui66/claude-loop-harness"
+        "repo": "wangfugui66/junior-go"
       }
     }
   }
@@ -101,8 +101,8 @@ Either path gives you the six agents and the skills without ever writing to `~/.
 what's left here is just the two personal-config files:
 
 ```powershell
-git clone https://github.com/wangfugui66/claude-loop-harness.git
-Copy-Item claude-loop-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
+git clone https://github.com/wangfugui66/junior-go.git
+Copy-Item junior-go\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
 # settings.json: merge by hand, don't overwrite — it's personal and drifts per machine on purpose
 ```
 

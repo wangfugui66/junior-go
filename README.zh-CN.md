@@ -1,6 +1,6 @@
 [English](README.md) | 中文
 
-# claude-loop-harness
+# junior-go
 
 一套可移植的 Claude Code 全局配置：`CLAUDE.md` + `settings.json` + 一套**六个 agent 组成的闭环开发
 流水线**（`agents/`），把"跟 agent 对话、祈祷它靠谱"变成一个有对抗评审、真实运行验证、外加人话版验收
@@ -65,8 +65,8 @@
 **斜杠命令流程**（在 Claude Code 会话里）：
 
 ```
-/plugin marketplace add wangfugui66/claude-loop-harness
-/plugin install claude-loop-harness@claude-loop-harness
+/plugin marketplace add wangfugui66/junior-go
+/plugin install junior-go@junior-go
 ```
 
 **或者走 `settings.json`**——把下面两段都加进去。这跟这台机器上安装 `andrej-karpathy-skills`
@@ -75,13 +75,13 @@
 ```json
 {
   "enabledPlugins": {
-    "claude-loop-harness@claude-loop-harness": true
+    "junior-go@junior-go": true
   },
   "extraKnownMarketplaces": {
-    "claude-loop-harness": {
+    "junior-go": {
       "source": {
         "source": "github",
-        "repo": "wangfugui66/claude-loop-harness"
+        "repo": "wangfugui66/junior-go"
       }
     }
   }
@@ -96,8 +96,8 @@
 个人配置文件：
 
 ```powershell
-git clone https://github.com/wangfugui66/claude-loop-harness.git
-Copy-Item claude-loop-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
+git clone https://github.com/wangfugui66/junior-go.git
+Copy-Item junior-go\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
 # settings.json 建议手动合并，不要整体覆盖——这个文件本来就是"个人化、每台机器都不一样"的
 ```
 
