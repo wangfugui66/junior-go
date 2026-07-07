@@ -1,14 +1,14 @@
-# claude-harness
+# claude-loop-harness
 
 English | [中文](README.zh-CN.md)
 
-A portable Claude Code global config: `CLAUDE.md` + `settings.json` + a **six-agent closed-harness dev
+A portable Claude Code global config: `CLAUDE.md` + `settings.json` + a **six-agent closed-loop dev
 harness** (`agents/`) that turns "prompt the agent and hope" into a repeatable system with adversarial
 review, real-run verification, and a plain-language brief built in.
 
 ## Who this is for
 
-This harness is built around one specific reader: **a junior engineer using Claude Code to build real
+This loop is built around one specific reader: **a junior engineer using Claude Code to build real
 things, who wants to get stronger while doing it — not just collect code that happens to run.**
 
 That constraint shapes every design choice here:
@@ -18,26 +18,26 @@ That constraint shapes every design choice here:
   trust a diff. Neither requires you to already know what a bad plan or a subtly wrong change looks like —
   that's the point.
 - **The human checkpoint is never automated away.** A `PASS` from the tester means "built to spec," not
-  "you understood what changed." The harness's last stop before you is always a human decision, not an agent's.
+  "you understood what changed." The loop's last stop before you is always a human decision, not an agent's.
 - **`review-briefer` exists specifically because a `PASS` verdict and a raw diff aren't enough for someone
   who can't yet read code fluently.** It translates the settled change into plain language — one-sentence
   goal, every changed file with a reason, the 3-5 core functions before-vs-after, what was actually tested
   vs. not, and the handful of lines most worth your own eyes — so accepting the change is an informed call,
   not a rubber stamp.
-- **The harness is meant to shrink as you grow.** It's a template you subset from, not an assembly line you
-  run end-to-end forever (see "Right-size it" in `agents/harness.md`). Catching yourself skipping stages more
-  often over time isn't cutting corners — it's the harness working as intended, because your own judgment is
+- **The loop is meant to shrink as you grow.** It's a template you subset from, not an assembly line you
+  run end-to-end forever (see "Right-size it" in `agents/LOOP.md`). Catching yourself skipping stages more
+  often over time isn't cutting corners — it's the loop working as intended, because your own judgment is
   covering ground the agents used to have to.
 
 ## What's in here
 
-- **`agents/*.md`** — six global sub-agents forming the harness, plus `agents/LOOP.md`, the operator's guide:
-  how the six roles wire together and hand off, the feedback edges that make it a *harness* and not a
+- **`agents/*.md`** — six global sub-agents forming the loop, plus `agents/LOOP.md`, the operator's guide:
+  how the six roles wire together and hand off, the feedback edges that make it a *loop* and not a
   pipeline, the memory spine that survives between sessions, and when to run 0 stages vs. all 6.
-- **`CLAUDE.md`** — a couple of generic personal preferences (reply language, mainly). Not harness-specific.
+- **`CLAUDE.md`** — a couple of generic personal preferences (reply language, mainly). Not loop-specific.
 - **`settings.json`** — personal editor/model/plugin settings. This one is closer to a dotfile than a
   system: don't copy it blindly, merge the parts you actually want (see Install below).
-- **`LOOP-STATE.md` (project-local, not in this repo)** — created at each project root by the harness
+- **`LOOP-STATE.md` (project-local, not in this repo)** — created at each project root by the loop's
   agents during a run. It's project-local bookkeeping: every agent reads `## Pitfalls / gotchas` and `##
   Decisions / rejected paths` at start (so the loop doesn't re-hit the same traps), and `runtime-verifier`
   + `surgical-implementer` append findings to it as they discover durable, project-specific facts. See
@@ -55,7 +55,7 @@ That constraint shapes every design choice here:
 | 真跑验证 / tester | `runtime-verifier.md` | after implementation lands — runs it for real, PASS/FAIL/INCONCLUSIVE | no (scratch only) |
 | 验收简报 / review-briefer | `review-briefer.md` | after tester PASS, right before you decide | no (read-only) |
 
-Full mechanics, the harness diagram, the "how much of this do I actually need" table, and the memory
+Full mechanics, the loop diagram, the "how much of this do I actually need" table, and the memory
 convention all live in [`agents/LOOP.md`](agents/LOOP.md) — read that before your first real run.
 
 ## Install
