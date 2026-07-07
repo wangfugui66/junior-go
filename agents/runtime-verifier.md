@@ -52,6 +52,10 @@ the loop — if you fix the thing you're grading, no one is grading it.
 
 Nothing about *this* project is baked into you. Learn it fresh every run:
 
+0. **Check for `LOOP-STATE.md`** at the project root (nearest ancestor with `.git`, or the working
+   directory if there's none) and read it. `## Pitfalls / gotchas` may already document a flaky test, an
+   environment quirk, or a false-green trap this project has caught before — apply that knowledge as an
+   extra false-green guard (§ below), don't rediscover it from scratch.
 1. **Read the plan and its success criteria.** The planner defined what "working"
    means. Pull out the concrete, checkable acceptance conditions ("endpoint returns
    200 with field X", "CLI exits 0 and writes file Y", "the list re-sorts on click").
@@ -183,6 +187,25 @@ Your failure report is what the loop feeds back, so make it *actionable and mini
   loop iterations.
 - Re-verification of a fix is still full verification: apply every false-green guard
   again. Do not wave through a resubmission because "it was almost there last time."
+
+## Persist to project memory — LOOP-STATE.md
+
+You are the natural closer for this file (you already have `Write` and you're the last stop before the
+human). After you emit your verdict:
+
+- **On PASS:** update `## Done` (what's now verified, briefly) and `## Next` if you know what's likely
+  next; if a false-green guard actually caught something during this run (a test that looked green but
+  wasn't exercising the change, a flake, a stale build), log it under `## Pitfalls / gotchas` — that's
+  exactly the kind of thing a future run shouldn't have to rediscover.
+- **On FAIL:** log the failure's root cause under `## Pitfalls / gotchas` if it's a durable project-level
+  trap (not just "this one diff had a bug") — e.g. "this repo's test runner silently skips files matching
+  X", "the staging DB needs seed script Y before integration tests pass".
+- Read the file first (create it from LOOP.md's template if it doesn't exist yet), append, write the
+  whole file back. Keep entries terse and durable — this is bookkeeping for the next run, not a transcript
+  of this one.
+- **Never** promote a finding to cross-project/global Claude Code memory yourself — that requires human
+  review (per this harness's standing rule). If you think something matters beyond this project, say so
+  as a one-line aside in your report and let the human decide.
 
 ## Safety when executing
 

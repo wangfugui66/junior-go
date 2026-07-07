@@ -93,8 +93,10 @@ The two verdict lines are **machine-routable on purpose** — `VERDICT: PROCEED|
 
 ## Memory spine (block #6) — the reason tomorrow's run isn't amnesiac
 
-The model forgets everything between runs; the disk doesn't. Drop a `LOOP-STATE.md` at each
-project root and have every stage read it first and write it last:
+The model forgets everything between runs; the disk doesn't. `LOOP-STATE.md` at the project root
+(nearest ancestor with `.git`, or the working dir if there's none) is that disk. **This is wired into all
+six agent files, not just a suggestion** — every agent reads it before it starts and (if it learned
+something durable) persists to it before it finishes:
 
 ```markdown
 # LOOP-STATE — <project>
@@ -108,11 +110,40 @@ project root and have every stage read it first and write it last:
 - <the next thing to pick up>
 ## Decisions / rejected paths
 - <what we tried, what the architect killed and why — so we don't relitigate>
+## Pitfalls / gotchas
+- <what tripped us up on THIS project — a wrong assumption, a build quirk, a flaky check, a
+  false-green trap — and what to do instead. Read this section first; it's the whole point.>
 ```
 
-Claude Code already ships a refined version of this idea (`~/.claude/.../memory/` = one fact per
-file + a `MEMORY.md` index with a `description` for recall). Use it for facts that outlive one
-project; use `LOOP-STATE.md` for the live per-project loop state.
+**Who writes it, and how:**
+
+- `surgical-implementer` and `runtime-verifier` have `Write` and persist directly (read the file, append
+  the relevant section, write it back). `runtime-verifier` is the natural closer — it updates `Done`/
+  `Next` and logs anything a false-green guard actually caught.
+- `requirement-scout`, `plan-author`, and `adversarial-architect` are deliberately **read-only** (no
+  `Write` tool — that's a maker/checker safety boundary, not an oversight) so they don't persist directly.
+  Instead they emit a `LOOP-STATE APPEND:` block in their output (before any strict last-line verdict, never
+  after) and **you, the orchestrator, persist it** — one copy-paste, not a tool grant that would blur their
+  read-only guarantee.
+- `review-briefer` reads it for context (e.g. "this diff resolved a previously-logged pitfall") but never
+  writes — it doesn't discover anything new, it translates already-settled work.
+
+**Scope discipline — this is project-local, and promotion to global memory is human-only, on purpose.**
+No agent promotes a `LOOP-STATE.md` entry to Claude Code's global/cross-project memory itself. Every
+agent's instructions say the same thing: if a finding seems to matter beyond this one repo, surface it as
+a one-line aside and let the human decide whether it's real signal or a one-off. This is a deliberate
+brake — letting agents freely generalize "lessons" across projects is exactly how you get the generic,
+stale, unearned "best practices" boilerplate this loop bans everywhere else (see the architect's banned-
+findings list, the tester's grounding rule). A pitfall worth remembering forever should survive a human
+actually reading it once.
+
+`LOOP-STATE.md` is disposable bookkeeping, not a deliverable — worth adding to `.gitignore` in most repos
+so it doesn't clutter the actual project history; it only needs to survive on the local disk between runs.
+
+Claude Code already ships a refined version of the *cross-project* half of this idea
+(`~/.claude/projects/<project>/memory/` = one fact per file + a `MEMORY.md` index with a `description`
+for recall). Use it for facts that outlive one project, promoted there by a human, not an agent; use
+`LOOP-STATE.md` for the live per-project loop state.
 
 ## Claude Code harness tips folded in (standing on giants' shoulders)
 
