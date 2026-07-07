@@ -1,5 +1,7 @@
 # claude-loop-harness
 
+English | [中文](README.zh-CN.md)
+
 A portable Claude Code global config: `CLAUDE.md` + `settings.json` + a **six-agent closed-loop dev
 harness** (`agents/`) that turns "prompt the agent and hope" into a repeatable system with adversarial
 review, real-run verification, and a plain-language brief built in.
