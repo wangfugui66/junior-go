@@ -55,6 +55,11 @@ nothing to them. This brief is the bridge — a teaching artifact, not a complia
 4. **The changed files themselves**, read at enough depth to explain *why* each one changed and to narrate
    the 3-5 core functions/classes before-vs-after. Skim non-core changed files (config, generated,
    lockfiles) rather than narrating each in depth — but they still appear in the file list.
+5. **`LOOP-STATE.md`** at the project root, if it exists — read-only, for context. If this task resolved
+   something logged under `## Pitfalls / gotchas` or `## Decisions / rejected paths`, it's worth a
+   one-line mention in the brief ("这次顺带解决了之前记录的一个坑：…"). You have no Write tool and don't
+   need one here — you don't discover or log pitfalls, you're reading someone else's already-settled
+   record for extra color.
 
 ---
 

@@ -23,17 +23,22 @@
   函数"以前 vs 现在"、哪些场景真的测过哪些没测、以及最值得你亲自看一眼的几处 diff——让"接受这次改动"
   变成一个真正理解后的决定，而不是盖个章。
 - **这套 harness 是设计来随着你变强而"变短"的。** 它是一个可以按需精简的模板，不是一条你永远要从头跑到尾
-  的流水线（详见 `agents/harness.md` 里的 "Right-size it"）。如果你发现自己跑的阶段越来越少，那不是偷
+  的流水线（详见 `agents/LOOP.md` 里的 "Right-size it"）。如果你发现自己跑的阶段越来越少，那不是偷
   懒，是 harness 本来就该这样——因为原来要靠 agent 把关的地方，现在你自己的判断力已经够用了。
 
 ## 仓库里有什么
 
-- **`agents/*.md`** — 组成 harness 的六个全局 sub-agent，外加 `agents/harness.md`（操作手册）：六个角色怎么
+- **`agents/*.md`** — 组成 harness 的六个全局 sub-agent，外加 `agents/LOOP.md`（操作手册）：六个角色怎么
   串联交接、让它成为"闭环"而不是"流水线"的反馈边、跨会话存活的记忆脊柱，以及什么时候该跑 0 个阶段、
   什么时候该跑全部 6 个。
 - **`CLAUDE.md`** — 几条通用的个人偏好（主要是回复语言），跟 harness 本身无关。
 - **`settings.json`** — 个人的编辑器/模型/插件设置。这部分更像是 dotfile 而不是系统本身：不要直接照
   抄，挑你真正需要的部分合并（见下面的安装说明）。
+- **`LOOP-STATE.md`（项目本地，这个仓库里没有）** — 由 harness 的 agent 在每个项目根目录自动创建的项目
+  本地工作簿。所有 agent 启动时都会读 `## Pitfalls / gotchas`（踩过的坑）和 `## Decisions / rejected paths`
+  （已经否决的设计），这样 loop 就不会踩同样的坑两次；`runtime-verifier` + `surgical-implementer` 发现有
+  价值的项目级观察时会追加到这个文件里。详见 `agents/LOOP.md` 的"记忆脊柱"章节。建议把 `LOOP-STATE.md`
+  加进 `.gitignore`——它是临时工作记录，不是真实代码库的一部分。
 
 ## 六个角色
 
@@ -47,14 +52,14 @@
 | 验收简报 / review-briefer | `review-briefer.md` | tester PASS 之后、你做最终决定之前（可选，默认建议开启） | 否（只读） |
 
 完整机制、harness 流程图、"这次到底要跑多少阶段"的判断表，以及记忆脊柱的约定，都在
-[`agents/harness.md`](agents/harness.md) 里——正式跑第一个真实任务之前建议先读一遍。
+[`agents/LOOP.md`](agents/LOOP.md) 里——正式跑第一个真实任务之前建议先读一遍。
 
 ## 安装
 
 ```powershell
-git clone https://github.com/wangfugui66/claude-harness-harness.git
-Copy-Item claude-harness-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
-Copy-Item claude-harness-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
+git clone https://github.com/wangfugui66/claude-loop-harness.git
+Copy-Item claude-loop-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
+Copy-Item claude-loop-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
 # settings.json 建议手动合并，不要整体覆盖——这个文件本来就是"个人化、每台机器都不一样"的
 ```
 
@@ -71,4 +76,4 @@ Copy-Item claude-harness-harness\agents "$env:USERPROFILE\.claude\agents" -Recur
 普通功能/修复：`plan-author` → 自己裁决 `adversarial-architect` 提出的异议 → `surgical-implementer` →
 `runtime-verifier` → PASS 之后跑 `review-briefer` → 你自己做最终的 accept/reject 判断。如果连需求本身
 都还没想清楚，就从 `requirement-scout` 往前多起一步。如果只是一个没什么影响面的琐碎改动，直接改文件
-就行——完整的判断标准见 `agents/harness.md`。
+就行——完整的判断标准见 `agents/LOOP.md` 的 "Right-size it" 小节。

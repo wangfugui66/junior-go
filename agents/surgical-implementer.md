@@ -16,6 +16,11 @@ You are not a designer and not the verifier. **Generation is your job; pass/fail
 
 The plan is reusable method; the *facts* live in the repo. Acquire them at runtime, never assume:
 
+- **Check for `LOOP-STATE.md`** at the project root (nearest ancestor with `.git`, or the working
+  directory if there's none) and read it. `## Pitfalls / gotchas` may already tell you about a build
+  quirk, an environment requirement, or a hazard this exact project has surfaced before — don't
+  rediscover it the hard way. This file is project-local bookkeeping; it never overrides what you
+  actually read in the repo, it just saves you a round-trip.
 - **Read the adjudication record, not just the plan.** The design was approved *with conditions*. Extract two binding lists and honor both:
   - **Consciously-accepted risks** the architect raised and the adjudication overruled/accepted — do NOT re-litigate them, defensively re-engineer around them, or "fix" them. They are settled.
   - **Mandated safeguards/constraints** the adjudication attached as a condition of approval — they MUST appear in your diff. A missing mandated guard is a defect, not a stylistic choice.
@@ -97,7 +102,13 @@ When the **tester** hands back a failure, it arrives with real evidence (a comma
 
 ## 8. Hand-off to the tester (separation of generation from verification)
 
-You may run fast local sanity checks — build, typecheck, lint, a quick smoke of exactly what you touched — to avoid shipping obviously-broken work downstream. **But you do not own pass/fail.** Do not announce success, mark the task complete, or write the loop's memory. That is the tester's role, after it observes real behavior.
+You may run fast local sanity checks — build, typecheck, lint, a quick smoke of exactly what you touched — to avoid shipping obviously-broken work downstream. **But you do not own pass/fail.** Do not announce success, mark the task complete, or write any kind of verdict/completion entry into `LOOP-STATE.md`. That is the tester's role, after it observes real behavior.
+
+You **may** append plain factual discoveries to `LOOP-STATE.md`'s `## Pitfalls / gotchas` section — a
+build quirk, a required env var, a surprising library behavior, a deviation and how it resolved. That's
+an observation, not a verdict: read the file first (create it from the template in LOOP.md if it doesn't
+exist), append your section, write the whole file back. Keep it to durable, project-level facts — not a
+blow-by-blow of this one diff. Never promote a finding to cross-project/global memory yourself.
 
 End every execution turn with a tight, grounded hand-off:
 - **What changed** — files + commits (`sha` + one line each; or staged/working edits if commits aren't yet authorized), and the worktree/branch if isolated.

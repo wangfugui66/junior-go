@@ -31,12 +31,18 @@ That constraint shapes every design choice here:
 
 ## What's in here
 
-- **`agents/*.md`** — six global sub-agents forming the harness, plus `agents/harness.md`, the operator's guide:
+- **`agents/*.md`** — six global sub-agents forming the harness, plus `agents/LOOP.md`, the operator's guide:
   how the six roles wire together and hand off, the feedback edges that make it a *harness* and not a
   pipeline, the memory spine that survives between sessions, and when to run 0 stages vs. all 6.
 - **`CLAUDE.md`** — a couple of generic personal preferences (reply language, mainly). Not harness-specific.
 - **`settings.json`** — personal editor/model/plugin settings. This one is closer to a dotfile than a
   system: don't copy it blindly, merge the parts you actually want (see Install below).
+- **`LOOP-STATE.md` (project-local, not in this repo)** — created at each project root by the harness
+  agents during a run. It's project-local bookkeeping: every agent reads `## Pitfalls / gotchas` and `##
+  Decisions / rejected paths` at start (so the loop doesn't re-hit the same traps), and `runtime-verifier`
+  + `surgical-implementer` append findings to it as they discover durable, project-specific facts. See
+  `agents/LOOP.md` § "Memory spine" for the full contract. Recommend adding `LOOP-STATE.md` to
+  `.gitignore` — it's ephemeral working memory, not part of the actual codebase.
 
 ## The six roles
 
@@ -50,14 +56,14 @@ That constraint shapes every design choice here:
 | 验收简报 / review-briefer | `review-briefer.md` | after tester PASS, right before you decide | no (read-only) |
 
 Full mechanics, the harness diagram, the "how much of this do I actually need" table, and the memory
-convention all live in [`agents/harness.md`](agents/harness.md) — read that before your first real run.
+convention all live in [`agents/LOOP.md`](agents/LOOP.md) — read that before your first real run.
 
 ## Install
 
 ```powershell
-git clone https://github.com/wangfugui66/claude-harness-harness.git
-Copy-Item claude-harness-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
-Copy-Item claude-harness-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
+git clone https://github.com/wangfugui66/claude-loop-harness.git
+Copy-Item claude-loop-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
+Copy-Item claude-loop-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
 # settings.json: merge by hand, don't overwrite — it's personal and drifts per machine on purpose
 ```
 
@@ -75,5 +81,5 @@ forward.
 For an ordinary feature or fix: `plan-author` → adjudicate `adversarial-architect`'s objections yourself →
 `surgical-implementer` → `runtime-verifier` → on PASS, `review-briefer` → you make the actual accept/reject
 call. Start one step earlier with `requirement-scout` if the requirement itself is still in doubt. Skip
-straight to just editing the file if it's a trivial, no-blast-radius change — see `agents/harness.md` for the
-full sizing guide.
+straight to just editing the file if it's a trivial, no-blast-radius change — see `agents/LOOP.md` § "Right-size it"
+for the full sizing guide.
