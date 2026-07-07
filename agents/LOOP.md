@@ -135,7 +135,7 @@ These are patterns from Claude Code's own design, and where each one lives in th
 Global-reusable core (#5 agents, #6 memory convention, the tips above) is done. These attach to a repo:
 
 - **#1 Heartbeat** — make it a *loop*, not a run: `/loop` (interval / self-paced in-session) or `/schedule` (cloud cron, survives closing the laptop), or lifecycle `hooks` (e.g. PostToolUse → run tests / auto-commit).
-- **#2 Worktrees** — parallel isolation so two agents don't collide: `git worktree`, or `isolation: worktree` on a sub-agent (already declared on the implementer).
+- **#2 Worktrees** — parallel isolation so two agents don't collide: `git worktree`, or `isolation: worktree` on a sub-agent (surgical-implementer already uses the EnterWorktree/ExitWorktree tools for this).
 - **#4 Connectors** — MCP servers so the loop touches your real tools (issue tracker, DB, Slack, staging API) and can open the PR + update the ticket itself.
 - **Per-project weighting** — a thin line in the project's `CLAUDE.md` re-weights the architect's 8 angles (e.g. "payments system: correctness + reversibility over speed") without forking the global agent.
 

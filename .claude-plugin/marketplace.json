@@ -1,0 +1,14 @@
+{
+  "name": "claude-loop-harness",
+  "description": "A six-agent closed-loop dev harness that guides junior engineers through plan, implement, verify, and review stages.",
+  "owner": {
+    "name": "wangfugui66"
+  },
+  "plugins": [
+    {
+      "name": "claude-loop-harness",
+      "description": "A six-agent closed-loop dev harness that guides junior engineers through plan, implement, verify, and review stages.",
+      "source": "./"
+    }
+  ]
+}

@@ -4,6 +4,8 @@
 !/.gitignore
 !/CLAUDE.md
 !/agents/
+!/.claude-plugin/
+!/skills/
 !/settings.json
 !/README.md
 !/README.zh-CN.md

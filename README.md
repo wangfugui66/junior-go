@@ -54,10 +54,49 @@ convention all live in [`agents/LOOP.md`](agents/LOOP.md) — read that before y
 
 ## Install
 
+### Option A — Install as a Claude Code Plugin (recommended)
+
+This repo self-hosts its own marketplace: a `.claude-plugin/marketplace.json` at the repo root that points
+its single plugin entry at `./`. Installing this way pulls in `agents/` *and* `skills/` as a real plugin
+install, with no file copying and — crucially — no self-modification prompt (see the gotcha under Option B
+for why that matters).
+
+**Slash-command flow**, inside a Claude Code session:
+
+```
+/plugin marketplace add wangfugui66/claude-loop-harness
+/plugin install claude-loop-harness@claude-loop-harness
+```
+
+**Or the `settings.json` flow** — add both blocks below. This mirrors exactly how a plugin like
+`andrej-karpathy-skills` (from GitHub repo `forrestchang/andrej-karpathy-skills`) is wired up:
+
+```json
+{
+  "enabledPlugins": {
+    "claude-loop-harness@claude-loop-harness": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-loop-harness": {
+      "source": {
+        "source": "github",
+        "repo": "wangfugui66/claude-loop-harness"
+      }
+    }
+  }
+}
+```
+
+Either path gives you the six agents and the skills without ever writing to `~/.claude/agents/` by hand.
+
+### Option B — Manual copy (CLAUDE.md + settings.json only)
+
+`agents/` and `skills/` are now covered by the plugin install above and no longer need manual copying —
+what's left here is just the two personal-config files:
+
 ```powershell
 git clone https://github.com/wangfugui66/claude-loop-harness.git
 Copy-Item claude-loop-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
-Copy-Item claude-loop-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
 # settings.json: merge by hand, don't overwrite — it's personal and drifts per machine on purpose
 ```
 
@@ -65,10 +104,12 @@ Copy-Item claude-loop-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
 
 **Gotcha worth knowing:** Claude Code's own safety layer treats writes to `~/.claude/CLAUDE.md` and
 `~/.claude/agents/` as *self-modification* — an agent changing its own global behavior/authority — and may
-block itself from doing this install for you, even after you've explicitly approved it in chat. That's
-intentional, not a bug: an agent shouldn't be able to grant itself new global capability on its own say-so.
-If it happens, run the copy yourself from a plain terminal, or use `/permissions` to allow it going
-forward.
+block itself from doing this install for you, even after you've explicitly approved it in chat. Manually
+copying `agents/` is exactly what used to trigger this block; Option A sidesteps it entirely, since the
+plugin manager does the write instead of the agent editing its own global files. That's intentional, not a
+bug: an agent shouldn't be able to grant itself new global capability on its own say-so. If it happens on
+the remaining `CLAUDE.md` copy, run it yourself from a plain terminal, or use `/permissions` to allow it
+going forward.
 
 ## Quick start
 

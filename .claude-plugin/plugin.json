@@ -1,0 +1,17 @@
+{
+  "name": "claude-loop-harness",
+  "version": "0.1.0",
+  "description": "A six-agent closed-loop dev harness that guides junior engineers through plan, implement, verify, and review stages.",
+  "author": {
+    "name": "wangfugui66"
+  },
+  "keywords": [
+    "dev-workflow",
+    "code-review",
+    "agents",
+    "junior-engineer",
+    "closed-loop",
+    "planning",
+    "verification"
+  ]
+}

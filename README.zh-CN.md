@@ -51,10 +51,48 @@
 
 ## 安装
 
+### 方式一 —— 作为 Claude Code Plugin 安装（推荐）
+
+这个仓库自带一份 marketplace：仓库根目录下的 `.claude-plugin/marketplace.json`，里面唯一的 plugin 条目
+指向 `./`（也就是仓库自己）。用这种方式安装，会把 `agents/` 和 `skills/` 一起装进去——不用手动复制
+文件，也完全不会碰到下面方式二里说的"自我修改"拦截（原因见下文）。
+
+**斜杠命令流程**（在 Claude Code 会话里）：
+
+```
+/plugin marketplace add wangfugui66/claude-loop-harness
+/plugin install claude-loop-harness@claude-loop-harness
+```
+
+**或者走 `settings.json`**——把下面两段都加进去。这跟这台机器上安装 `andrej-karpathy-skills`
+（来自 GitHub 仓库 `forrestchang/andrej-karpathy-skills`）的写法完全是同一个模式：
+
+```json
+{
+  "enabledPlugins": {
+    "claude-loop-harness@claude-loop-harness": true
+  },
+  "extraKnownMarketplaces": {
+    "claude-loop-harness": {
+      "source": {
+        "source": "github",
+        "repo": "wangfugui66/claude-loop-harness"
+      }
+    }
+  }
+}
+```
+
+两条路径都能让你拿到六个 agent 和 skills，全程不需要自己手写 `~/.claude/agents/`。
+
+### 方式二 —— 手动复制（只剩 CLAUDE.md + settings.json）
+
+`agents/` 和 `skills/` 现在都由上面的 plugin 安装覆盖了，不再需要手动复制——剩下要手动复制的只有两个
+个人配置文件：
+
 ```powershell
 git clone https://github.com/wangfugui66/claude-loop-harness.git
 Copy-Item claude-loop-harness\CLAUDE.md "$env:USERPROFILE\.claude\CLAUDE.md"
-Copy-Item claude-loop-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
 # settings.json 建议手动合并，不要整体覆盖——这个文件本来就是"个人化、每台机器都不一样"的
 ```
 
@@ -62,9 +100,10 @@ Copy-Item claude-loop-harness\agents "$env:USERPROFILE\.claude\agents" -Recurse
 
 **一个值得知道的坑：** Claude Code 自带的安全机制会把"写入 `~/.claude/CLAUDE.md` 和
 `~/.claude/agents/`"识别为**自我修改**——也就是 agent 在改自己未来的全局行为/权限——即便你已经在对话里
-明确批准了，它也可能自己拦下这个安装动作。这是故意设计成这样的，不是 bug：不应该允许 agent 靠自己
-一句话就给自己扩权。如果遇到这种拦截，就在普通终端里自己跑一遍复制命令，或者用 `/permissions` 提前
-放行。
+明确批准了，它也可能自己拦下这个安装动作。以前手动复制 `agents/` 正是触发这个拦截的原因；方式一能完全
+绕开它，因为动手写文件的是 plugin 管理器，而不是 agent 自己改自己的全局文件。这是故意设计成这样的，不是
+bug：不应该允许 agent 靠自己一句话就给自己扩权。如果这个拦截出现在剩下的 `CLAUDE.md` 复制上，就在普通
+终端里自己跑一遍，或者用 `/permissions` 提前放行。
 
 ## 快速上手
 
