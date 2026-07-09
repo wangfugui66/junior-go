@@ -34,20 +34,34 @@ The **feedback edges** are what close the loop — without them it's just a pipe
 
 ## The six roles
 
-| Role | File | Fires when | Can mutate source? |
-|---|---|---|---|
-| 调研证伪 / scout | `requirement-scout.md` | **gated** — only when the requirement is novel/greenfield/uncertain; validate WHAT & WHY before any planning | no (research only) |
-| 方案 / planner | `plan-author.md` | start of any non-trivial task; or to REVISE after objections/failures | no (read-only) |
-| 对抗评审 / architect | `adversarial-architect.md` | after a plan exists, before code — falsify it (8-angle attack) | no (read-only) |
-| 执行 / implementer | `surgical-implementer.md` | only after adjudication settles the design | **yes** |
-| 真跑验证 / tester | `runtime-verifier.md` | after implementation lands — *runs* it, PASS/FAIL/INCONCLUSIVE | no (scratch only) |
-| 讲解+成长记录 / junior-explainer | `junior-explainer.md` | **optional, after tester PASS**, right before your acceptance checkpoint — translates the settled diff + test evidence into a plain-language explanation for someone who doesn't yet read code fluently, and proposes an update to their persistent `memory/junior/` growth record | no (read-only, no verdict) |
+| Role | File | Model | Fires when | Can mutate source? |
+|---|---|---|---|---|
+| 调研证伪 / scout | `requirement-scout.md` | opus | **gated** — only when the requirement is novel/greenfield/uncertain; validate WHAT & WHY before any planning | no (research only) |
+| 方案 / planner | `plan-author.md` | opus | start of any non-trivial task; or to REVISE after objections/failures | no (read-only) |
+| 对抗评审 / architect | `adversarial-architect.md` | opus (optional `fable` second opinion, see below) | after a plan exists, before code — falsify it (8-angle attack) | no (read-only) |
+| 执行 / implementer | `surgical-implementer.md` | sonnet | only after adjudication settles the design | **yes** |
+| 真跑验证 / tester | `runtime-verifier.md` | sonnet | after implementation lands — *runs* it, PASS/FAIL/INCONCLUSIVE | no (scratch only) |
+| 讲解+成长记录 / junior-explainer | `junior-explainer.md` | sonnet | **optional, after tester PASS**, right before your acceptance checkpoint — translates the settled diff + test evidence into a plain-language explanation for someone who doesn't yet read code fluently, and proposes an update to their persistent `memory/junior/` growth record | no (read-only, no verdict) |
 
-**Models:** the **scout** and **architect** run on **opus** — both do hard adversarial / first-principles
-reasoning where a strong checker earns its cost. The **implementer** runs on **sonnet** (execution needs
-care and bug-spotting, not peak reasoning — cheaper and faster). Planner, tester, and junior-explainer
-inherit the session model — plain summarization/translation doesn't need the adversarial tier either.
-This is the article's "different model for the checker" — plus a cheaper model for the mechanical work.
+**Models — every role has an explicit, pinned assignment; none inherit the session model.** The **scout**,
+**planner**, and **architect** run on **opus** — all three do hard adversarial / first-principles reasoning
+(grounding a plan in an unfamiliar repo, falsifying it, or falsifying a requirement) where a strong model
+earns its cost. The **implementer**, **tester**, and **junior-explainer** run on **sonnet** — execution,
+running-and-diagnosing, and explaining a settled diff all need care and correctness but not peak/adversarial
+reasoning, so they take the cheaper, faster tier. This is the article's "different model for the checker"
+— plus a cheaper model for the mechanical work — applied consistently instead of leaving half the roles on
+"whatever the session happens to be running."
+
+**architect's optional `fable` second opinion.** `opus` is the default and stays that way for routine runs.
+For an especially high-stakes plan (payments, migrations, security-sensitive, or a `REVISE`↔`REBUT` cycle
+that isn't converging), the orchestrator/human may re-invoke `adversarial-architect` with an explicit
+`model: fable` override for an independently-modeled second critique — see `adversarial-architect.md`'s
+"Second-opinion escalation" note. This is deliberately on-demand, not the default: as of this writing there
+is no verified evidence that `fable` matches or exceeds `opus` specifically at adversarial/falsification
+reasoning (the case for it is Anthropic's own guidance that `fable` reasons well when given autonomy — a
+different property than "finds more plan flaws"), and spending it on every routine review would burn quota
+that's better reserved for the plans that actually warrant an extra pass. Revisit this once you have your
+own before/after evidence from running it.
 
 Note the **scout plays by a different grounding standard** than the code-side agents: it can't cite
 `file:line`, so it must cite **sources**, separate **verified from assumed**, and state **confidence** —

@@ -3,7 +3,7 @@ name: runtime-verifier
 description: >-
   Use to CLOSE THE LOOP after an implementation lands (or whenever a change must be PROVEN to work in the real system, not judged by reading the diff). EXECUTES: runs the build, runs the test suite, drives the feature end-to-end, captures real evidence — literal commands, exit codes, stdout/stderr, screenshots — then reports PASS / FAIL / INCONCLUSIVE against the plan's success criteria. On FAIL produces a minimal reproduction and routes it to the implementer (code bug) or planner (design wrong). Do NOT use it to write or fix code, or to do a static/style review — it observes behavior, it does not opine on source.
 tools: Read, Grep, Glob, Bash, Write, TodoWrite, WebFetch
-model: inherit
+model: sonnet
 ---
 
 # Runtime Verifier （真跑验证 / 测试）

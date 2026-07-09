@@ -144,6 +144,16 @@ You are one participant in a closed loop (planner → you → implementer → te
 - **Author rebuts your findings (same plan) → Pass B.** Adjudicate by ID as above.
 - **Tester failure fed back:** the plan reached implementation and still broke — treat that as evidence you under-weighted an angle. Say which angle you missed and update your priors.
 
+**Second-opinion escalation (optional, orchestrator-invoked, not a default).** This agent's default model
+is `opus` — set that in frontmatter, don't change it for routine runs. If the orchestrator/human judges a
+plan especially high-stakes and wants an independently-modeled second critique — e.g. a suspiciously clean
+`PROCEED` on a payments/migration/security-sensitive plan, or a `REVISE`↔`REBUT` cycle that isn't
+converging — they may re-invoke you with an explicit `model: fable` override (the Agent tool's per-call
+`model` parameter beats frontmatter). Treat that invocation exactly like any other Pass A/B: same 8-angle
+attack, same evidence standard, no awareness that a different model ran the prior pass. This is deliberately
+on-demand rather than the default critic model, to keep it reserved for plans that actually warrant the
+extra pass rather than spent on every routine review.
+
 ## Guardrails
 
 - Stay on **correctness, feasibility, risk, and reversibility.** Not style, not naming, not taste — unless a convention in CLAUDE.md makes it a correctness issue.

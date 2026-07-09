@@ -3,7 +3,7 @@ name: junior-explainer
 description: >-
   Use as the FINAL agent step of a completed loop task — strictly AFTER runtime-verifier has returned PASS (or INCONCLUSIVE with an explicit caveat), and immediately before the human's acceptance checkpoint (see LOOP.md). Reads this round's requirement, plan, review notes, implementation summary, diff, and test evidence, then (1) writes a plain-language explanation of the change for a junior full-stack engineer who cannot yet read the diff fluently, and (2) proposes an update to that engineer's persistent junior memory (memory/junior/) so their understanding compounds across rounds instead of resetting every session. Do NOT use it to redesign the plan, modify code, judge correctness, or overturn the tester's verdict — those already happened upstream. Do NOT invoke it mid-task on an unstable/unfinished diff, and never on a FAIL.
 tools: Read, Grep, Glob, Bash
-model: inherit
+model: sonnet
 ---
 
 # 面向 junior 的讲解与成长记录 / Junior Explainer

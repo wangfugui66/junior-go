@@ -98,18 +98,27 @@ The feedback edges are what make this a *loop* rather than a pipeline — route 
 | Role | `subagent_type` | Fires when | Can mutate source? | Model |
 |---|---|---|---|---|
 | Requirement validation | `requirement-scout` | Gated — only when the requirement is novel/greenfield/uncertain; validates WHAT & WHY before any planning | No (research only) | opus |
-| Plan authoring | `plan-author` | Start of any non-trivial task, or to produce a REVISE after objections/failures | No (read-only) | inherit |
-| Adversarial review | `adversarial-architect` | After a plan exists, before any code — falsifies it via an 8-angle attack | No (read-only) | opus |
+| Plan authoring | `plan-author` | Start of any non-trivial task, or to produce a REVISE after objections/failures | No (read-only) | opus |
+| Adversarial review | `adversarial-architect` | After a plan exists, before any code — falsifies it via an 8-angle attack | No (read-only) | opus (optional `fable` second opinion — see below) |
 | Implementation | `surgical-implementer` | Only after the design is adjudicated/settled | **Yes** | sonnet |
-| Runtime verification | `runtime-verifier` | After implementation lands — actually runs it, emits PASS/FAIL/INCONCLUSIVE | No (scratch only) | inherit |
-| Explanation + growth tracking | `junior-explainer` | Optional, after `runtime-verifier` PASS (or INCONCLUSIVE, if asked), right before the human's acceptance checkpoint — translates the settled diff + test evidence into a plain-language explanation and proposes a `memory/junior/` update | No (read-only, no verdict) | inherit |
+| Runtime verification | `runtime-verifier` | After implementation lands — actually runs it, emits PASS/FAIL/INCONCLUSIVE | No (scratch only) | sonnet |
+| Explanation + growth tracking | `junior-explainer` | Optional, after `runtime-verifier` PASS (or INCONCLUSIVE, if asked), right before the human's acceptance checkpoint — translates the settled diff + test evidence into a plain-language explanation and proposes a `memory/junior/` update | No (read-only, no verdict) | sonnet |
 
-`requirement-scout` and `adversarial-architect` run on **opus** because both do hard adversarial /
-first-principles reasoning where a strong checker earns its cost. `surgical-implementer` runs on
-**sonnet** — execution needs care and bug-spotting, not peak reasoning, and is cheaper/faster.
-`plan-author`, `runtime-verifier`, and `junior-explainer` inherit the session model — summarization,
-verification-by-running, and translation don't need the adversarial tier either. This is "use a
-different, stronger model for the checker" plus "use a cheaper model for mechanical work."
+Every role has an explicit, pinned model — none inherit the session model. `requirement-scout`,
+`plan-author`, and `adversarial-architect` run on **opus** because all three do hard adversarial /
+first-principles reasoning (grounding a plan in an unfamiliar repo, falsifying it, or falsifying a
+requirement) where a strong model earns its cost. `surgical-implementer`, `runtime-verifier`, and
+`junior-explainer` run on **sonnet** — execution, running-and-diagnosing, and explaining a settled diff
+all need care and correctness but not peak/adversarial reasoning. This is "use a stronger model for the
+checkers and the planner" plus "use a cheaper model for the mechanical/execution work."
+
+`adversarial-architect`'s `opus` is the default for routine runs. For an especially high-stakes plan, the
+orchestrator/human may re-invoke it with an explicit `model: fable` override (the Agent tool's per-call
+`model` beats frontmatter) for an independently-modeled second critique — on-demand only, since there is no
+verified evidence yet that `fable` matches or exceeds `opus` specifically at adversarial/falsification
+reasoning, and running it on every review would spend quota better reserved for plans that actually warrant
+the extra pass. See `adversarial-architect.md`'s "Second-opinion escalation" note and `LOOP.md`'s "Models"
+section for the full rationale.
 
 `requirement-scout` and `adversarial-architect` work in whatever language the request and repo are
 written in (Chinese or English) — match the asker rather than translating. `requirement-scout` also plays
