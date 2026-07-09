@@ -17,8 +17,8 @@ harness tips baked in.
         ▼                               └─────────────────────┘  └── "根子是需求错了" ◀──────┴── FAIL / irreversible / PASS
       (停)                                                       (回灌终点是 scout,不是 planner)          │
                                                                                                     PASS ▼
-                                                                                          验收简报 review-briefer
-                                                                                      (讲人话，不裁决，不是第七个verdict)
+                                                                                       讲解+成长记录 junior-explainer
+                                                                              (讲人话 + 提案 junior memory，不裁决，不是第七个verdict)
                                                                                                           │
                                                                                                           ▼
                                                                                               你：5秒验收checkpoint
@@ -30,7 +30,7 @@ The **feedback edges** are what close the loop — without them it's just a pipe
 - **architect ↔ planner** — `REVISE` bounces the plan back; you adjudicate the rebuttal.
 - **tester → implementer** (code bug) / **→ planner** (design wrong) / **→ requirement-scout** (the root cause is a *wrong requirement*).
 - **irreversible → ROLLBACK**. And **tester PASS is not the finish line** — it means "built to spec", not "achieves the effect you wanted". So the real close is a **5-second acceptance checkpoint — you, not an agent**: PASS → you eyeball it → **accept** (write memory, done) **or reject** → route by *why*: wrong effect because the need/criteria were wrong → **scout** (REFRAME); right need but bad approach → **planner**. This is deliberately a human judgment, NOT a stage with its own verdict (see Right-size it).
-- **tester → review-briefer** (optional, on PASS) — if the diff isn't self-explanatory to you yet, review-briefer turns it into a plain-language brief *before* your checkpoint. It hands you material, not a ruling — the accept/reject call above is still 100% yours.
+- **tester → junior-explainer** (optional, on PASS) — if the diff isn't self-explanatory to you yet, junior-explainer turns it into a plain-language explanation *before* your checkpoint, and separately proposes an update to your persistent `memory/junior/` growth record (see "Junior memory spine" below). It hands you material, not a ruling — the accept/reject call above is still 100% yours.
 
 ## The six roles
 
@@ -41,11 +41,11 @@ The **feedback edges** are what close the loop — without them it's just a pipe
 | 对抗评审 / architect | `adversarial-architect.md` | after a plan exists, before code — falsify it (8-angle attack) | no (read-only) |
 | 执行 / implementer | `surgical-implementer.md` | only after adjudication settles the design | **yes** |
 | 真跑验证 / tester | `runtime-verifier.md` | after implementation lands — *runs* it, PASS/FAIL/INCONCLUSIVE | no (scratch only) |
-| 验收简报 / review-briefer | `review-briefer.md` | **optional, after tester PASS**, right before your acceptance checkpoint — translates the settled diff + test evidence into a plain-language brief for someone who doesn't yet read code fluently | no (read-only, no verdict) |
+| 讲解+成长记录 / junior-explainer | `junior-explainer.md` | **optional, after tester PASS**, right before your acceptance checkpoint — translates the settled diff + test evidence into a plain-language explanation for someone who doesn't yet read code fluently, and proposes an update to their persistent `memory/junior/` growth record | no (read-only, no verdict) |
 
 **Models:** the **scout** and **architect** run on **opus** — both do hard adversarial / first-principles
 reasoning where a strong checker earns its cost. The **implementer** runs on **sonnet** (execution needs
-care and bug-spotting, not peak reasoning — cheaper and faster). Planner, tester, and review-briefer
+care and bug-spotting, not peak reasoning — cheaper and faster). Planner, tester, and junior-explainer
 inherit the session model — plain summarization/translation doesn't need the adversarial tier either.
 This is the article's "different model for the checker" — plus a cheaper model for the mechanical work.
 
@@ -67,10 +67,10 @@ task's blast radius justifies**:
 | Risky / complex / wide blast radius | + adversarial-architect — **4** |
 | Novel / greenfield / requirement in doubt | + requirement-scout at the front — **5** |
 | Outcome still in doubt after it's built | + the acceptance checkpoint (you) at the end |
-| You can't yet read the diff fluently enough to run that checkpoint yourself | + review-briefer, right before the checkpoint |
+| You can't yet read the diff fluently enough to run that checkpoint yourself | + junior-explainer, right before the checkpoint |
 
 If the loop ever *feels* long, you're looking at its **maximal** form — subset it. ~90% of work is the
-3-stage path. Adding a stage is a deliberate response to risk, never a ritual. review-briefer is the one
+3-stage path. Adding a stage is a deliberate response to risk, never a ritual. junior-explainer is the one
 exception worth defaulting to **on** rather than gating by risk: it's cheap, it never blocks the loop, and
 if you're still building fluency, skipping it just re-creates the comprehension debt the loop exists to
 avoid (see "Stay the engineer" below).
@@ -81,9 +81,10 @@ avoid (see "Stay the engineer" below).
 or greenfield, start one step earlier with `requirement-scout` — a **KILL** verdict means you're done,
 you just saved yourself from building the wrong thing. Otherwise start at `plan-author`, hand its plan to
 `adversarial-architect`, adjudicate the objections yourself, hand the settled plan to `surgical-implementer`,
-then `runtime-verifier`. On PASS, invoke `review-briefer` before you do your own accept/reject pass — it
-costs one cheap agent call and turns the diff into something you can actually read and learn from. You are
-the orchestrator and the adjudicator — the single human checkpoint the article insists you keep.
+then `runtime-verifier`. On PASS, invoke `junior-explainer` before you do your own accept/reject pass — it
+costs one cheap agent call, turns the diff into something you can actually read and learn from, and hands
+you a memory-update proposal you can apply in one copy-paste. You are the orchestrator and the
+adjudicator — the single human checkpoint the article insists you keep.
 
 **Workflow mode** (once the flow is trustworthy): a deterministic script wires plan→review→
 (loop until PROCEED)→implement→verify→(loop until PASS), so you design it once and press go.
@@ -125,7 +126,7 @@ something durable) persists to it before it finishes:
   Instead they emit a `LOOP-STATE APPEND:` block in their output (before any strict last-line verdict, never
   after) and **you, the orchestrator, persist it** — one copy-paste, not a tool grant that would blur their
   read-only guarantee.
-- `review-briefer` reads it for context (e.g. "this diff resolved a previously-logged pitfall") but never
+- `junior-explainer` reads it for context (e.g. "this diff resolved a previously-logged pitfall") but never
   writes — it doesn't discover anything new, it translates already-settled work.
 
 **Scope discipline — this is project-local, and promotion to global memory is human-only, on purpose.**
@@ -144,6 +145,47 @@ Claude Code already ships a refined version of the *cross-project* half of this 
 (`~/.claude/projects/<project>/memory/` = one fact per file + a `MEMORY.md` index with a `description`
 for recall). Use it for facts that outlive one project, promoted there by a human, not an agent; use
 `LOOP-STATE.md` for the live per-project loop state.
+
+## Junior memory spine — `memory/junior/` (a second, parallel spine, not a rename of the first)
+
+`LOOP-STATE.md` remembers what the *loop* has learned about the project. `memory/junior/` remembers what
+the *junior operator* has already been shown and has evidence of engaging with — a second, deliberately
+separate, project-local disk spine, owned entirely by `junior-explainer`:
+
+- `project-context.md` — stack, layout, conventions, common commands (freeform markdown).
+- `junior-profile.yaml` — `known_concepts` / `weak_concepts` / `recently_explained` /
+  `preferred_explanation_style`, each concept tagged with evidence and a confidence level.
+- `growth-map.yaml` — a 0-3 level per area (frontend / backend / database / testing / workflow), where 0
+  is "untouched" and 3 is "can do this unaided independently" — see `agents/junior-explainer.md` for the
+  full level definitions and the promotion gate that stops a level from rising off a single explanation.
+  `architecture` is a deliberate exception: it's a valid `concepts_touched` tag but has no ladder entry at
+  all (a `non_ladder_tracks` block in this file's own schema says so) — it routes to `decision-rationale.md`
+  instead, never to a level change.
+- `decision-rationale.md` — the "why we chose X over Y" from each round, in junior-facing language; also
+  where `architecture`-tagged learning accumulates instead of a growth-map level.
+- `episodes/<id>.yaml` — one append-only file per loop round: what changed, what was tested, which
+  concepts it touched, and what it taught.
+- `compression-policy.md` + `concept-memory-template.yaml` — a documented (not automated) policy for
+  compressing old episodes into concept-level memory once `episodes/` grows past its retention window; a
+  human/orchestrator housekeeping act, never something `junior-explainer` runs itself.
+
+Full schemas, the exact YAML shapes, and the write-once promotion rules live in `agents/junior-explainer.md`
+— this section only states the two invariants that make it safe to run alongside the engineering spine:
+
+1. **Read-only for `junior-explainer`, same as the three read-only engineering agents.** It has no `Write`/
+   `Edit` tool. It emits a `Junior Memory Update Proposal` YAML block; **you, the orchestrator, apply it** —
+   the identical pattern as `LOOP-STATE APPEND:` above, for the identical reason (a maker/checker boundary
+   that a tool grant would blur).
+2. **One-directional, by design.** `memory/junior/` is never read by `requirement-scout`, `plan-author`,
+   `adversarial-architect`, `surgical-implementer`, or `runtime-verifier` — none of their instructions
+   reference it, and it must stay that way. A comprehension signal about the operator is not an input to
+   engineering decisions; letting "the junior is still learning X" simplify a plan or soften a test would
+   quietly trade correctness for pedagogy. `memory/junior/` may only ever change *how the next explanation
+   is written* — depth, reading order, concept linking — never *what gets built or how it's verified*.
+
+Like `LOOP-STATE.md`, `memory/junior/` is project-local (lives at the target project's root, not in this
+harness repo) and is a reasonable `.gitignore` candidate — though some teams may choose to commit it so a
+junior's growth record survives a machine switch; that's a per-project human call.
 
 ## Claude Code harness tips folded in (standing on giants' shoulders)
 
@@ -175,6 +217,7 @@ Global-reusable core (#5 agents, #6 memory convention, the tips above) is done. 
 The loop changes the work, it doesn't delete you from it. Verification is still yours; comprehension
 debt grows faster the smoother the loop runs; the comfortable posture (take whatever it gives back) is
 the risky one. Design the loop to go faster on work you understand — not to avoid understanding it.
-`review-briefer` exists for exactly this: it doesn't lower the bar for what you need to understand, it
+`junior-explainer` exists for exactly this: it doesn't lower the bar for what you need to understand, it
 lowers the cost of understanding it — a plain-language ramp onto the diff for whenever you're not yet
-fluent enough to read it cold.
+fluent enough to read it cold, plus a growth record in `memory/junior/` so each ramp is shorter than the
+last one, instead of every round starting from zero.

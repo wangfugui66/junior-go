@@ -1,7 +1,7 @@
 {
   "name": "junior-go",
   "version": "0.1.0",
-  "description": "A six-agent closed-loop dev harness that guides junior engineers through plan, implement, verify, and review stages.",
+  "description": "A six-agent closed-loop dev harness that guides junior engineers through plan, implement, verify, and growth-tracked explanation stages.",
   "author": {
     "name": "wangfugui66"
   },
