@@ -140,11 +140,26 @@ cheap agent call that turns the diff into something the operator can actually re
 memory-update proposal the operator applies themselves. The human operator is the orchestrator and
 adjudicator throughout — never collapse that checkpoint into an agent's verdict.
 
-**Workflow mode** (once the flow is trustworthy for a given project): a deterministic script/hook can
-wire plan → review → (loop until PROCEED) → implement → verify → (loop until PASS) → explain so the human
-presses go once. The verdict lines are machine-routable by design — parse the exact tokens
-(`PROCEED|REVISE|REJECT`, `PROCEED|REFRAME|KILL`, `PASS|FAIL|INCONCLUSIVE`) directly rather than the
-surrounding prose when building or driving such automation.
+**Workflow mode** (once the flow is trustworthy for a given project): `workflows/dev-loop.js` wires
+classify → scout (gated) → plan → review → implement → verify → explain as a deterministic script, with
+the architect and tester feedback loops **round-capped** (not "loop forever until PROCEED/PASS") — a
+recurring objection or failure returns `stuck`/`rejected` instead of spinning, matching `plan-author`'s and
+`adversarial-architect`'s own escalation-trigger instructions. Invoke it with
+`Workflow({ scriptPath: '<path to workflows/dev-loop.js>', args: { task, risk } })`; only the script's final
+`return` reaches the calling conversation, everything else stays in each subagent's own transcript. Prefer
+Manual mode over Workflow mode when the operator is still building judgment on the specific kind of
+decision an architect REVISE or a tester FAIL represents — the round-capped auto-loop is suited to work the
+operator has already built the judgment to safely delegate, not a default for a junior's every task.
+
+**Goal mode (`/goal`)** is a script-free alternative for one bounded retry at a time — it does not spawn or
+orchestrate the other agents itself, it just keeps the current session taking another turn until an
+independent evaluator model confirms a stated condition, so the operator still invokes each agent by hand
+in between. Fits the implementer↔tester retry best (a test result is a genuinely measurable finish line);
+see `agents/LOOP.md`'s "Goal mode" section for worked examples.
+
+The verdict lines are machine-routable by design — parse the exact tokens (`PROCEED|REVISE|REJECT`,
+`PROCEED|REFRAME|KILL`, `PASS|FAIL|INCONCLUSIVE`) directly rather than the surrounding prose when building
+or driving any of the above.
 
 ## Memory spine — do not run this loop amnesiac
 

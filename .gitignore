@@ -6,6 +6,7 @@
 !/agents/
 !/.claude-plugin/
 !/skills/
+!/workflows/
 !/settings.json
 !/README.md
 !/README.zh-CN.md

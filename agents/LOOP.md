@@ -100,11 +100,54 @@ costs one cheap agent call, turns the diff into something you can actually read 
 you a memory-update proposal you can apply in one copy-paste. You are the orchestrator and the
 adjudicator — the single human checkpoint the article insists you keep.
 
-**Workflow mode** (once the flow is trustworthy): a deterministic script wires plan→review→
-(loop until PROCEED)→implement→verify→(loop until PASS), so you design it once and press go.
+**Workflow mode** (once the flow is trustworthy): `workflows/dev-loop.js` is a deterministic script that
+wires the whole thing — `Right-size it` classification → scout (gated) → plan → review (bounded REVISE
+loop) → implement → verify (bounded FAIL-retry loop) → explain — so you design it once and press go. Run
+it with `Workflow({ scriptPath: '<path to workflows/dev-loop.js>', args: { task: '<what to build/fix>' } })`
+from any project that has the six agents installed; pass `args.risk` explicitly (`trivial`/`ordinary`/
+`risky`/`novel`) to skip the built-in classifier call. **This is not "loop until PROCEED/PASS forever" —
+both feedback loops are round-capped** (3 rounds each by default) and return a `stuck`/`rejected` result
+instead of spinning when the same objection or failure recurs, exactly matching `plan-author`'s and
+`adversarial-architect`'s own escalation-trigger instructions. The main conversation only ever sees the
+script's final `return` value — every intermediate plan draft, architect pass, and implementer retry stays
+in its own subagent transcript, never the main thread.
 
-The two verdict lines are **machine-routable on purpose** — `VERDICT: PROCEED|REVISE|REJECT` and
-`PASS|FAIL|INCONCLUSIVE` — so a script can branch on them without parsing prose.
+**A caveat specific to this project: Workflow mode trades away a checkpoint that Manual mode keeps on
+purpose.** In Manual mode *you* adjudicate every architect REVISE and every tester FAIL before the next
+round starts — for a junior still building judgment, that adjudication is itself part of the point (see
+"Stay the engineer" below), not just overhead. Workflow mode's round-capped auto-loop is well-suited to
+work you've already built the judgment to safely delegate; for work you're still learning from, Manual
+mode's slower, human-adjudicated version is the better default. Neither the round cap nor the workflow
+itself changes the **final** checkpoint — a clean workflow return still lands on your 5-second acceptance
+checkpoint, same as Manual mode; the workflow never self-certifies or pushes/commits on your behalf.
+
+**Goal mode (`/goal`) — no script, for one bounded retry loop at a time.** If you don't want to write or
+maintain a workflow script, `/goal` gets you a narrower version of the same round-capping for a single
+stage pair, typed directly into an ordinary session. It does not spawn or orchestrate the other agents
+itself — it just keeps *this* session taking another turn (which you'd use to invoke the next agent by
+hand) until an independent evaluator model confirms your condition, so it composes with Manual mode rather
+than replacing it. Two concrete examples for this project:
+
+```
+/goal runtime-verifier reports PASS with every plan success criterion backed by a captured
+command + exit code + output, or stop after 5 tries and hand the failure to plan-author as a
+design-level problem instead of another implementer patch
+```
+
+```
+/goal this task has gone through plan-author, adversarial-architect (PROCEED), surgical-implementer,
+and runtime-verifier (PASS), and junior-explainer has produced a brief — or stop after 15 turns
+without a clean PASS
+```
+
+The first scopes `/goal` to just the implementer↔tester retry (the one sub-loop with a genuinely
+measurable finish line — a test result). The second scopes it to the whole session, which gets you close
+to Workflow mode's effect without writing a script, at the cost of the main conversation seeing every
+intermediate turn instead of just the final result.
+
+The three verdict lines are **machine-routable on purpose** — `VERDICT: PROCEED|REVISE|REJECT`,
+`PROCEED|REFRAME|KILL`, and `PASS|FAIL|INCONCLUSIVE` — so both a workflow script and a `/goal` evaluator
+can branch on them without parsing prose.
 
 ## Memory spine (block #6) — the reason tomorrow's run isn't amnesiac
 
