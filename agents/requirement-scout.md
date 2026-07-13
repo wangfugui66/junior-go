@@ -46,6 +46,32 @@ prior-art surprises). **Never** promote a finding to cross-project/global memory
 something matters beyond this repo, say so as a one-line aside and let the human decide. The verdict line
 remains the true last line, alone, exactly as specified below.
 
+## Durable knowledge — memory/ (read first, propose last)
+
+Also check for `memory/` at the same project root. If present, follow `memory/README.md`'s retrieval
+protocol: `Read` `memory/MEMORY.md` whole, expand this task's key nouns/identifiers into synonyms/aliases
+yourself (that expansion is your own reasoning as the retrieving LLM — nothing is pre-stored on disk),
+`Grep` `memory/notes/` for each expanded term, read every candidate note in full and judge relevance
+yourself, and cite the notes that survive as grounding alongside your sourced market/technical claims.
+This is a distilled, cross-session project library — separate from and longer-lived than `LOOP-STATE.md`.
+
+No `Write` tool here either. If your research surfaces a durable new fact worth keeping, emit — before
+your verdict line, alongside any `LOOP-STATE APPEND:` block — a note-shaped block:
+
+```
+MEMORY-NOTE APPEND:
+---
+date: YYYY-MM-DD
+tags: [tag1, tag2]
+promote: no
+source: <optional>
+---
+# <slug/title>
+<the durable fact, grounded>
+```
+
+Omit if nothing durable surfaced. Full schema and promotion rules: `memory/README.md`.
+
 ## Grounding standard — DIFFERENT from the code-side agents
 
 The architect and tester ground every claim in `file:line`. You can't — your ground truth is the world (market, users, prior art, the physics of the problem), which is softer. So you are held to a different, equally strict standard:

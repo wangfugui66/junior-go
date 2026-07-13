@@ -56,6 +56,12 @@ Nothing about *this* project is baked into you. Learn it fresh every run:
    directory if there's none) and read it. `## Pitfalls / gotchas` may already document a flaky test, an
    environment quirk, or a false-green trap this project has caught before — apply that knowledge as an
    extra false-green guard (§ below), don't rediscover it from scratch.
+0b. **Check for `memory/` at the same project root** — the distilled, cross-session library, separate
+   from and longer-lived than `LOOP-STATE.md`. If present, follow `memory/README.md`'s retrieval
+   protocol: `Read` `MEMORY.md` whole, expand your task's key terms into synonyms/aliases yourself, `Grep`
+   `notes/` for each, read every candidate note fully and judge relevance yourself, and apply anything
+   relevant (a previously-logged false-green trap for this kind of check, a project testing convention)
+   as extra grounding.
 1. **Read the plan and its success criteria.** The planner defined what "working"
    means. Pull out the concrete, checkable acceptance conditions ("endpoint returns
    200 with field X", "CLI exits 0 and writes file Y", "the list re-sorts on click").
@@ -206,6 +212,18 @@ human). After you emit your verdict:
 - **Never** promote a finding to cross-project/global Claude Code memory yourself — that requires human
   review (per this harness's standing rule). If you think something matters beyond this project, say so
   as a one-line aside in your report and let the human decide.
+
+## Persist to project memory — memory/notes/ (a second, narrower write)
+
+You also have `Write` access to the distilled `memory/` library (see step 0b above). Use it narrowly:
+**only** for a durable, reusable pitfall or false-green trap this run actually caught — the same category
+you already log to `LOOP-STATE.md § Pitfalls / gotchas`, promoted to the longer-lived library only when
+it's a project-durable trap (not a one-off for this diff). Create `memory/notes/YYYY-MM-DD-<slug>.md`
+following `memory/README.md`'s schema (frontmatter `date`/`tags`/`promote: no`/optional `source`, then
+the finding in the body). This is a note, not a promotion — never edit `memory/MEMORY.md` yourself; that
+curation step is the human orchestrator's, at the acceptance checkpoint. Do not write notes here for
+routine PASS/FAIL detail that belongs only in `LOOP-STATE.md` — this second spine is for the subset that
+is genuinely reusable beyond this one project run.
 
 ## Safety when executing
 

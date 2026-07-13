@@ -10,3 +10,10 @@
 !/settings.json
 !/README.md
 !/README.zh-CN.md
+
+# ── 记忆子系统:只放行文档+种子+fixture,memory/junior/ 及运行时活记忆永不进仓库 ──
+!/memory/
+/memory/*
+!/memory/README.md
+!/memory/MEMORY.md
+!/memory/notes/

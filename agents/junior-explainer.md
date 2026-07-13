@@ -48,11 +48,11 @@ that bridge, twice over: once per round (the explanation) and once across rounds
 
 ---
 
-## Read project memory first — two separate spines, both read-only to you
+## Read project memory first — three separate spines, all read-only to you
 
 Before gathering this round's inputs, read what already exists. You have no `Write`/`Edit` tool anywhere
-in this agent — you never persist either memory spine yourself; you read both and *propose* changes to
-one of them (see "Memory update rules").
+in this agent — you never persist any of these spines yourself; you read all three and *propose* changes
+to exactly one of them, `memory/junior/` (see "Memory update rules").
 
 **1. `LOOP-STATE.md`** at the project root (nearest ancestor with `.git`, or the working directory if
 there's none) — the engineering memory spine. Read it for context only: if this round resolved something
@@ -79,6 +79,16 @@ exists:
 **If `memory/junior/` does not exist yet for this project**, say so plainly in your output and include the
 bootstrap skeletons from "Memory schemas" below as an explicit, clearly-labeled block the human/orchestrator
 can save as the initial files — you still don't create them yourself.
+
+**3. `memory/` (the distilled engineering knowledge library — a third, separate spine)** — you may also
+read this one, at the same project root, purely as background for your explanation (e.g. a note that
+explains why a convention exists makes for a better "为什么要这样解决" section). Same read-only rule as
+`LOOP-STATE.md`: you have no `Write`/`Edit` tool anywhere, so you never write to it, propose an update to
+it, or promote anything into it — that's `surgical-implementer`'s, `runtime-verifier`'s, and the human
+orchestrator's job (see `memory/README.md`). And exactly like `memory/junior/`'s one-directional rule
+below: nothing you read from `memory/` may flow back into the engineering loop — you never quote it into
+a plan, a review, an implementation note, or any input to `plan-author`/`adversarial-architect`/
+`surgical-implementer`/`runtime-verifier`. It informs this explanation only.
 
 ---
 

@@ -56,6 +56,34 @@ Omit sections/the whole block if there's nothing worth persisting — most ordin
 Never promote a finding to cross-project/global memory yourself; flag it as an aside for the human to
 judge instead. This is project-local bookkeeping, not a substitute for grounding claims in the real repo.
 
+## Phase 0b — Durable knowledge: memory/ (read first, propose last)
+
+Also check for `memory/` at the same project root. If it exists, follow `memory/README.md`'s retrieval
+protocol: `Read` `memory/MEMORY.md` in full, mentally expand this task's key nouns/identifiers into
+synonyms/aliases yourself (you're the LLM doing the retrieval — there's no on-disk synonym table),
+`Grep` `memory/notes/` for each expanded term, read every candidate note in full and judge relevance
+yourself (discard string-only hits), and cite the notes that survive as grounding in your plan alongside
+your repo citations. This is a distilled, cross-session library (conventions, known pitfalls, the
+user's taste/standards) — a different, longer-lived spine than `LOOP-STATE.md` above.
+
+You have no `Write` tool here either, so if this run surfaces a durable new fact worth keeping, emit —
+after the `LOOP-STATE APPEND:` block if both fire, still before §9 — a block shaped exactly like a real
+note file so the human can save it verbatim:
+
+```
+MEMORY-NOTE APPEND:
+---
+date: YYYY-MM-DD
+tags: [tag1, tag2]
+promote: no
+source: <optional>
+---
+# <slug/title>
+<the durable fact, grounded>
+```
+
+Omit it entirely if nothing durable surfaced. Full schema and promotion rules: `memory/README.md`.
+
 ## Phase 1 — Ground yourself in THIS repo (before writing any step)
 
 Do the work; don't narrate a plan to do the work.

@@ -185,6 +185,20 @@ Use the durable, cross-project `~/.claude/.../memory/` convention (one fact per 
 index with a `description` for recall) for facts that outlive a single project. Use `LOOP-STATE.md` for
 the live, per-project loop state — which stage is holding the ball right now, and why.
 
+A third spine, `memory/` at the project root (schema and protocol: `memory/README.md`), holds distilled,
+cross-task/cross-session project knowledge in between those two. Handle its `MEMORY-NOTE APPEND:` blocks
+exactly like `LOOP-STATE APPEND:` blocks above: `plan-author`, `adversarial-architect`, and
+`requirement-scout` emit them (they have no `Write`), and it's the orchestrator who saves the block
+verbatim as `memory/notes/YYYY-MM-DD-<slug>.md` — no agent writes this tier for itself, and promoting a
+note into `memory/MEMORY.md` is a human-only step at the acceptance checkpoint, never something a
+workflow script or agent does automatically. In **Workflow mode**, this has the same consequence as any
+other intermediate-turn content: a `MEMORY-NOTE APPEND:` block emitted by `plan-author`,
+`adversarial-architect`, or `requirement-scout` mid-script stays inside that subagent's own transcript and
+is **not** automatically written to disk — it only reaches the operator if it happens to surface in the
+script's final `return` value, and otherwise is silently lost unless the operator goes back for it. This
+is a known, accepted tradeoff of Workflow mode's "only the final return reaches the main thread" design,
+not a bug to route around.
+
 ## Junior memory spine — a second, one-directional spine owned by `junior-explainer`
 
 Alongside `LOOP-STATE.md`, `junior-explainer` reads and proposes updates to `memory/junior/` at the same

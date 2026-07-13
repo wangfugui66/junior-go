@@ -244,6 +244,38 @@ Like `LOOP-STATE.md`, `memory/junior/` is project-local (lives at the target pro
 harness repo) and is a reasonable `.gitignore` candidate — though some teams may choose to commit it so a
 junior's growth record survives a machine switch; that's a per-project human call.
 
+## Durable knowledge spine — `memory/` (a third, cross-session spine, not a rename of either above)
+
+`LOOP-STATE.md` is the loop's live, single-task inbox — thrown away in spirit once the task is done.
+`memory/junior/` tracks what the *operator* has been shown. **`memory/` is the third spine: a distilled,
+cross-task, cross-session library of project knowledge** — conventions, idioms, hard-won pitfalls, the
+operator's taste/standards — that outlives any one task without going all the way to Claude Code's
+global/cross-project memory. Full protocol and schema live in `memory/README.md`, which is the single
+source of truth for this spine (this section only orients it against the other two):
+
+- **Layout:** `memory/MEMORY.md` (small, curated, read whole every retrieval) + `memory/notes/*.md`
+  (dated, one finding per file, the raw layer `MEMORY.md` gets distilled from).
+- **Zero new tool grants — this reuses the exact same `tools:` split already in place.** Agents with
+  `Write` (`surgical-implementer`, `runtime-verifier`) write `memory/notes/*.md` directly, the same way
+  they already write `LOOP-STATE.md`. Agents without `Write` (`plan-author`, `adversarial-architect`,
+  `requirement-scout`) emit a `MEMORY-NOTE APPEND:` block — the exact same maker/checker pattern as
+  `LOOP-STATE APPEND:` — for the human/orchestrator to save. `junior-explainer` may read it as background
+  but never writes it, same as it never writes `LOOP-STATE.md`.
+- **Retrieval is Grep-recall + live LLM judgment, not a stored synonym table.** Every agent reads
+  `MEMORY.md`, expands the task's terms into synonyms/aliases using its own knowledge at the moment of
+  retrieval, `Grep`s `memory/notes/` for each, then reads and judges relevance itself. Nothing on disk
+  encodes aliases — see `memory/README.md`'s retrieval protocol for the full six-step version, including
+  a note on why validating this semantic-matching capability requires a judge that hasn't already seen
+  the answer.
+- **Promotion (`notes/` → `MEMORY.md`) and cleanup are both human-only, gated at the same checkpoint** —
+  the "PASS → you eyeball it → accept (write memory, done)" line under "The loop" above is the literal
+  trigger point: that's when the human reviews this round's `MEMORY-NOTE APPEND:` blocks and any
+  `promote: proposed` notes and decides what graduates into `MEMORY.md`. Same discipline as everywhere
+  else in this harness: no agent promotes its own finding to a more durable tier.
+- This harness repo's own `memory/README.md` + `memory/MEMORY.md` + `memory/notes/` sample are schema
+  fixtures for reference, not live data read at runtime — the real files live at whatever project root
+  the loop is actually running against, exactly like `LOOP-STATE.md` and `memory/junior/` above.
+
 ## Claude Code harness tips folded in (standing on giants' shoulders)
 
 These are patterns from Claude Code's own design, and where each one lives in the loop:

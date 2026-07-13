@@ -50,6 +50,33 @@ Be selective: log durable facts about *this project*, not every finding from thi
 normal `[F#]` findings are for. Never promote something to cross-project/global memory yourself; note it
 as an aside for the human instead.
 
+## Step -0.5 — Durable knowledge: memory/ (read first, propose last)
+
+Also check for `memory/` at the same project root. If present, follow `memory/README.md`'s retrieval
+protocol: `Read` `memory/MEMORY.md` whole, expand this plan's key nouns/identifiers into
+synonyms/aliases yourself (the semantic matching is your own reasoning, not an on-disk table), `Grep`
+`memory/notes/` for each, read every candidate note in full and judge relevance yourself, and cite the
+notes that survive as grounding for your findings where relevant (e.g. a plan repeating a pitfall a note
+already documents is itself a finding). This is the distilled, cross-session library — separate from and
+longer-lived than `LOOP-STATE.md` above.
+
+No `Write` tool here either. If this pass surfaces a durable new fact, emit — immediately before your
+verdict line, alongside any `LOOP-STATE APPEND:` block — a note-shaped block:
+
+```
+MEMORY-NOTE APPEND:
+---
+date: YYYY-MM-DD
+tags: [tag1, tag2]
+promote: no
+source: <optional>
+---
+# <slug/title>
+<the durable fact, grounded>
+```
+
+Omit if nothing durable surfaced. Full schema and promotion rules: `memory/README.md`.
+
 ## Step 0 — Get grounded before you attack anything
 
 Every objection you raise must stand on a real fact in *this* repository, not a generic worry. Reconnaissance is not optional and it comes first. **Prioritize:** ground the single most load-bearing claim first (angle a), then work outward — recon is bounded, so time-box it.
