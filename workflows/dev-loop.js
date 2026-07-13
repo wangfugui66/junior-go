@@ -90,6 +90,11 @@ let plan = await agent(
 let architectVerdict = null
 let lastArchitectOut = null
 let architectRound = 0
+// Every architect pass, not just the winning one - a REVISE-round pass can still have
+// emitted a MEMORY-NOTE APPEND: block (adversarial-architect has no Write; that's its
+// only way to persist a durable finding). Keeping only lastArchitectOut would silently
+// drop any such block from an earlier round the moment the loop moves on.
+const architectReports = []
 
 if (risk === 'risky' || risk === 'novel') {
   phase('Review')
@@ -99,6 +104,7 @@ if (risk === 'risky' || risk === 'novel') {
       'Review this plan (Pass A if this is its first review, or the delta if revised):\n\n' + plan,
       { agentType: 'adversarial-architect', label: `architect-pass-${architectRound}` }
     )
+    architectReports.push(lastArchitectOut)
     architectVerdict = lastVerdict(lastArchitectOut, /VERDICT:\s*(PROCEED|REVISE|REJECT)/)
     if (architectVerdict === 'PROCEED' || architectVerdict === 'REJECT') break
 
@@ -112,11 +118,11 @@ if (risk === 'risky' || risk === 'novel') {
 
   if (architectVerdict === 'REJECT') {
     log('Architect: REJECT - the approach itself is falsified. Stopping for a human/planner re-design, not another blind attempt.')
-    return { rejected: true, stage: 'architect', rounds: architectRound, plan, report: lastArchitectOut }
+    return { rejected: true, stage: 'architect', rounds: architectRound, spec, plan, report: lastArchitectOut, architectReports }
   }
   if (architectVerdict !== 'PROCEED') {
     log(`Architect has not reached PROCEED after ${MAX_ARCHITECT_ROUNDS} rounds - that's the same-objection-recurring escalation trigger both agent files call out. Stopping instead of looping forever.`)
-    return { stuck: true, stage: 'architect', rounds: architectRound, plan, lastReport: lastArchitectOut }
+    return { stuck: true, stage: 'architect', rounds: architectRound, spec, plan, lastReport: lastArchitectOut, architectReports }
   }
 }
 
@@ -153,11 +159,11 @@ while (testerRound < MAX_TESTER_ROUNDS) {
 
 if (testVerdict === 'INCONCLUSIVE') {
   log('Tester: INCONCLUSIVE - could not execute the decisive check. Not a pass; needs a human to unblock the environment.')
-  return { inconclusive: true, stage: 'tester', rounds: testerRound, plan, impl, report: testOut }
+  return { inconclusive: true, stage: 'tester', rounds: testerRound, spec, plan, architectReports, impl, report: testOut }
 }
 if (testVerdict !== 'PASS') {
   log(`Tester has not reached PASS after ${MAX_TESTER_ROUNDS} rounds - the same failure recurring is plan-author's own escalation trigger, not implementer's to keep patching. Stopping.`)
-  return { stuck: true, stage: 'tester', rounds: testerRound, plan, impl, lastReport: testOut }
+  return { stuck: true, stage: 'tester', rounds: testerRound, spec, plan, architectReports, impl, lastReport: testOut }
 }
 
 // ---- 4. junior-explainer - only reached on a real PASS ----
@@ -169,15 +175,22 @@ const brief = await agent(
 )
 
 // This return value is ALL that reaches the main conversation - every intermediate
-// plan draft, architect pass, and implementer retry stayed in its own subagent
-// transcript. The human acceptance checkpoint (accept / reject-and-route) still
-// happens after this, on this returned material - the workflow does not self-certify.
+// plan draft and implementer retry stayed in its own subagent transcript. spec and
+// architectReports are included in full (not just the winning pass) specifically so
+// any MEMORY-NOTE APPEND: block a no-Write agent (scout, architect) emitted along the
+// way surfaces here instead of being silently lost with its subagent's transcript -
+// see memory/README.md's "Writing, promotion, and cleanup" for what happens to these
+// at the human acceptance checkpoint. The human acceptance checkpoint (accept /
+// reject-and-route) still happens after this, on this returned material - the
+// workflow does not self-certify.
 return {
   passed: true,
   risk,
   architectRounds: architectRound,
   testerRounds: testerRound,
+  spec,
   plan,
+  architectReports,
   impl,
   testReport: testOut,
   brief,
