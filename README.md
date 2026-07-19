@@ -115,8 +115,17 @@ Yes — the repo now has Codex entry points alongside the original Claude Code o
   Claude Code/Codex split while making changes.
 - **Codex plugin manifest:** `.codex-plugin/plugin.json` exposes the shared `skills/` directory to Codex
   plugin ingestion.
+- **Codex role configuration:** `.codex/config.toml` limits loop concurrency, while
+  `.codex/agents/*.toml` registers all six roles with model, reasoning, verbosity, and sandbox defaults.
 - **Shared loop assets:** `agents/`, `skills/`, `workflows/`, and `memory/` remain the source files for the
   loop instead of being forked per harness.
+
+The Codex defaults save usage by reserving deeper reasoning for the one role that is explicitly paid to
+find plan flaws: `adversarial-architect` uses `gpt-5.6-sol` at `high`; requirement scouting, planning, and
+implementation use `gpt-5.6-terra` at `medium`; runtime verification and junior explanation use
+`gpt-5.6-luna` at `low`. Every role requests low verbosity, and `.codex/config.toml` caps the loop at two
+concurrent child agents with one nesting level. Codex does not expose a supported per-role hard token-budget
+field, so these are the enforceable cost controls rather than a misleading pseudo-limit.
 
 The important caveat: Claude Code and Codex do not use the exact same registration mechanism for
 sub-agents. In Claude Code, `agents/*.md` becomes hard permission-bounded sub-agents when installed as a

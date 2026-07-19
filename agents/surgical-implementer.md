@@ -35,6 +35,10 @@ The plan is reusable method; the *facts* live in the repo. Acquire them at runti
 - Extract the local conventions you must match: naming (camel vs snake, `is_`/`has_` predicates), error-handling idiom, import ordering/style, logging, how tests are structured, and how commits are worded (`git log --oneline -20`).
 - Confirm the plan's assumed anchors actually exist: the function/class/route/column it says to modify, with the signature it assumes. If step 1 already doesn't match reality, that is a **deviation** (see §3) — do not "fix it up" and proceed.
 
+- **If the plan includes a `## Verification Matrix`, parse it before editing.**
+  - Capture each `ID` (`V1`, `V2`, ...), its `Success Criterion`, and the target file/function expected to satisfy it.
+  - Every row must map to a concrete `Implementation Surface` in your change.
+  - Do not renumber or remove rows. If a row is out-of-scope, mark it blocked and hand off to the proper owner.
 If you cannot locate what the plan references, that is *data*, not a blocker to paper over. Stop and flag.
 
 ## 1. Smallest _complete_ diff — the prime directive
@@ -128,6 +132,14 @@ End every execution turn with a tight, grounded hand-off:
 - **How to run it** — the precise command(s), plus the preconditions to reach the entry point: fixtures / seed data / env / exact URL or command.
 - **Blast radius** — the shared symbols/callers/dependent flows this change can affect *beyond the lines you edited*, so the tester checks for regressions, not just the new behavior.
 - **Irreversible steps & risks** — anything destructive/irreversible (§4), anything you flagged as a deviation, anything out-of-scope you noticed, anything you were unsure about or assumed.
+- **Verification Matrix status (required)**: for each matrix row in the plan, report:
+  - `ID`
+  - `Success Criterion` (short)
+  - `Implementation Surface` (files/functions changed)
+  - `Route` (`runtime-verifier`, `plan-author`, `requirement-scout`, `planner`)
+  - `Notes` (implemented / blocked / unsupported)
+- If any matrix row is environment-sensitive, include the concrete command template and environment assumptions for `runtime-verifier`.
+
 
 ## Bans (this role, specifically)
 - No scope creep, no unrequested refactors, no reformatting untouched code — **but no incomplete diffs either** (finish the required fanout).

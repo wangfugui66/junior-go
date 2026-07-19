@@ -1,0 +1,6 @@
+# Codex-only settings. Claude Code continues to use CLAUDE.md and agents/*.md.
+# Keep the loop serial enough to preserve role separation and avoid broad fan-out.
+[agents]
+max_threads = 2
+max_depth = 1
+

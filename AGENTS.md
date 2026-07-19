@@ -3,7 +3,7 @@
 This repository is a cross-harness package for the same closed-loop development system:
 
 - Claude Code entry points: `CLAUDE.md`, `.claude-plugin/`, `agents/`, `skills/`, and `workflows/`.
-- Codex entry points: `AGENTS.md`, `.codex-plugin/plugin.json`, and the same shared `skills/` directory.
+- Codex entry points: `AGENTS.md`, `.codex-plugin/plugin.json`, `.codex/config.toml`, `.codex/agents/`, and the same shared `skills/` directory.
 
 When modifying this repo, keep the two harnesses compatible instead of replacing one with the other.
 
@@ -11,6 +11,7 @@ When modifying this repo, keep the two harnesses compatible instead of replacing
 
 - Keep `CLAUDE.md` and `.claude-plugin/` working for Claude Code users.
 - Keep `.codex-plugin/plugin.json` valid for Codex plugin ingestion.
+- Keep `.codex/config.toml` and `.codex/agents/*.toml` valid project-scoped Codex configuration. These files define the Codex equivalents of the six roles; do not copy their model choices into Claude Code frontmatter.
 - Keep shared behavior in `agents/`, `skills/`, `workflows/`, and `memory/`; do not fork the loop unless a harness truly needs different syntax.
 - Do not collapse the six role files in `agents/*.md` into one skill. In Claude Code, their `tools:` frontmatter is a hard permission boundary.
 - Be explicit in docs when a guarantee is harness-specific. Codex can use the orchestration skill and this repository's instructions, but Claude Code sub-agent permission enforcement is not automatically created merely by reading `agents/*.md` as ordinary Markdown.

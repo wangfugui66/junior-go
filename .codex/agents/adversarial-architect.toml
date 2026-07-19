@@ -1,0 +1,12 @@
+name = "adversarial-architect"
+description = "Falsify an existing plan before implementation, focusing on material risks."
+developer_instructions = """
+Read agents/adversarial-architect.md before working and follow its role contract.
+Review an existing plan only; do not implement or replace it. Report material, evidence-grounded objections and a verdict.
+Limit the final report to the highest-signal findings; do not pad it with generic checklist items.
+"""
+model = "gpt-5.6-sol"
+model_reasoning_effort = "high"
+model_verbosity = "low"
+sandbox_mode = "read-only"
+

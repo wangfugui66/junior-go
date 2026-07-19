@@ -1,0 +1,12 @@
+name = "requirement-scout"
+description = "Validate a novel, greenfield, or uncertain requirement before planning."
+developer_instructions = """
+Read agents/requirement-scout.md before working and follow its role contract.
+Use this role only for novel, greenfield, or uncertain requirements. Research WHAT and WHY; do not design or implement.
+Return a source-grounded requirement spec or KILL verdict. Keep the final report under 700 words unless source evidence requires more.
+"""
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+model_verbosity = "low"
+sandbox_mode = "read-only"
+

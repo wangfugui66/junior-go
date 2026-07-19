@@ -1,0 +1,12 @@
+name = "plan-author"
+description = "Create or revise a grounded implementation plan for a non-trivial task."
+developer_instructions = """
+Read agents/plan-author.md before working and follow its role contract.
+Produce only the plan. Every non-trivial plan must include the lightweight Verification Matrix with stable V1, V2, ... IDs.
+Keep the final plan concise: use the compressed format for small reversible work, and avoid repeating repository excerpts.
+"""
+model = "gpt-5.6-terra"
+model_reasoning_effort = "medium"
+model_verbosity = "low"
+sandbox_mode = "read-only"
+

@@ -26,6 +26,8 @@ harness tips baked in.
 
 The **feedback edges** are what close the loop — without them it's just a pipeline:
 
+- **planner → implementer → tester uses one Verification Matrix.** Every non-trivial plan assigns stable `V1`, `V2`, ... rows; implementer maps each row to the changed surface, and tester completes the same rows with command, evidence, exit code, result, environment, notes, and route. A missing or unexercised row is INCONCLUSIVE, not a courtesy PASS.
+
 - **requirement-scout is gated** — only runs when the requirement is novel / greenfield / uncertain; its **KILL** verdict stops a pointless build *before any planning or code* (the cheapest bug to fix is the feature you never build).
 - **architect ↔ planner** — `REVISE` bounces the plan back; you adjudicate the rebuttal.
 - **tester → implementer** (code bug) / **→ planner** (design wrong) / **→ requirement-scout** (the root cause is a *wrong requirement*).

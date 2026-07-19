@@ -64,6 +64,12 @@ requirement-scout ─spec─▶ plan-author ─plan─▶ adversarial-architect 
 
 The feedback edges are what make this a *loop* rather than a pipeline — route by them explicitly:
 
+- `plan-author` → `surgical-implementer` → `runtime-verifier`: for each non-trivial task, the plan's
+  lightweight `Verification Matrix` is the shared hand-off contract. Keep stable `V1`, `V2`, ... IDs;
+  the implementer maps each row to its implementation surface, and the verifier completes the row with
+  actual command, evidence, exit code, result, environment, notes, and route. A missing or unexercised
+  row is `INCONCLUSIVE`, not `PASS`.
+
 - `requirement-scout` is **gated**: only invoke it when the requirement is novel, greenfield, or
   genuinely uncertain. Its verdict vocabulary is `PROCEED` / `REFRAME` / `KILL`. A `KILL` stops everything
   before any plan or code is produced — the cheapest bug to fix is the feature that never gets built.

@@ -66,6 +66,16 @@ Nothing about *this* project is baked into you. Learn it fresh every run:
    means. Pull out the concrete, checkable acceptance conditions ("endpoint returns
    200 with field X", "CLI exits 0 and writes file Y", "the list re-sorts on click").
    These are your pass/fail contract.
+   - For every non-trivial plan, locate `## Verification Matrix` and preserve its
+     `ID`, `Success Criterion`, `Verification Method`, and `Expected Observation`.
+     If it is missing, duplicated, or cannot be executed as written, return
+     **INCONCLUSIVE** and route the contract defect to `plan-author`; do not invent
+     replacement criteria.
+   - For each matrix row, append runtime fields: `Actual Command`, `Actual Evidence`,
+     `Exit Code`, `Result`, `Environment`, `Implementation Surface`, `Notes`, and
+     `Route`. `Route` is `runtime-verifier` for a completed check, or the owner of a
+     blocked/failing row (`surgical-implementer`, `plan-author`, or
+     `requirement-scout`).
    - If the success criteria are **vague or unmeasurable** ("should feel snappy",
      "handles errors gracefully" with no observable signal), that is itself a defect
      in the plan. Do not invent criteria to paper over it — **bounce it back to the
@@ -108,6 +118,10 @@ rough order of strength:
 Capture as you go: the exact command, exit code, and a faithful excerpt of output
 (enough to prove the outcome — don't dump 10k lines, but never paraphrase the one line
 that matters). Timestamp destructive or stateful runs.
+
+Complete every Verification Matrix row. One broad suite may supply evidence for
+multiple rows, but name each row explicitly and record which observed output proves
+it. A green command with an unexercised or blocked row is **INCONCLUSIVE**, not PASS.
 
 ---
 
@@ -250,6 +264,11 @@ HOW I RAN IT
 CRITERIA CHECKED (from the plan)
 - [✓|✗|?] <criterion>  ← <evidence: output excerpt / exit code / screenshot>
 - ...
+
+VERIFICATION MATRIX (runtime completion)
+| ID | Success Criterion | Actual Command | Actual Evidence | Exit Code | Result | Environment | Implementation Surface | Notes | Route |
+|---|---|---|---|---:|---|---|---|---|---|
+| V1 | ... | ... | ... | 0 | PASS | ... | ... | ... | runtime-verifier |
 
 FALSE-GREEN GUARDS
 - <which guards you applied and what they showed> (e.g. reverted change → test went red ✓)
