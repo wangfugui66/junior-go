@@ -2,13 +2,15 @@
 
 English | [中文](README.zh-CN.md)
 
-A portable Claude Code global config: `CLAUDE.md` + `settings.json` + a **six-agent closed-loop dev
-harness** (`agents/`) that turns "prompt the agent and hope" into a repeatable system with adversarial
-review, real-run verification, and a plain-language, growth-tracked explanation built in.
+A portable Claude Code + Codex closed-loop dev harness: Claude Code gets `CLAUDE.md`,
+`.claude-plugin/`, and six permission-bounded sub-agent definitions; Codex gets `AGENTS.md`,
+`.codex-plugin/plugin.json`, and the shared orchestration skill. Together they turn "prompt the agent and
+hope" into a repeatable system with adversarial review, real-run verification, and a plain-language,
+growth-tracked explanation built in.
 
 ## Who this is for
 
-This loop is built around one specific reader: **a junior engineer using Claude Code to build real
+This loop is built around one specific reader: **a junior engineer using AI coding agents to build real
 things, who wants to get stronger while doing it — not just collect code that happens to run.**
 
 That constraint shapes every design choice here:
@@ -37,7 +39,12 @@ That constraint shapes every design choice here:
 - **`agents/*.md`** — six global sub-agents forming the loop, plus `agents/LOOP.md`, the operator's guide:
   how the six roles wire together and hand off, the feedback edges that make it a *loop* and not a
   pipeline, the memory spine that survives between sessions, and when to run 0 stages vs. all 6.
+- **`AGENTS.md`** — Codex-facing repository instructions: preserve the Claude Code and Codex entry points
+  together, and keep harness-specific guarantees explicit.
+- **`.codex-plugin/plugin.json`** — Codex plugin metadata that exposes the shared `skills/` directory.
 - **`CLAUDE.md`** — a couple of generic personal preferences (reply language, mainly). Not loop-specific.
+- **`.claude-plugin/`** — Claude Code plugin metadata and marketplace entry for installing the six
+  registered sub-agents plus shared skills.
 - **`settings.json`** — personal editor/model/plugin settings. This one is closer to a dotfile than a
   system: don't copy it blindly, merge the parts you actually want (see Install below).
 - **`LOOP-STATE.md` (project-local, not in this repo)** — created at each project root by the loop's
@@ -99,6 +106,24 @@ a role's behavior inline. If you only take one thing from this section: **instal
 quietly turns a mechanical guarantee into a hopeful one.
 
 ## Install
+
+### Can I use this from Codex?
+
+Yes — the repo now has Codex entry points alongside the original Claude Code ones:
+
+- **Codex repo instructions:** `AGENTS.md` tells Codex how to treat this repo and how to preserve the
+  Claude Code/Codex split while making changes.
+- **Codex plugin manifest:** `.codex-plugin/plugin.json` exposes the shared `skills/` directory to Codex
+  plugin ingestion.
+- **Shared loop assets:** `agents/`, `skills/`, `workflows/`, and `memory/` remain the source files for the
+  loop instead of being forked per harness.
+
+The important caveat: Claude Code and Codex do not use the exact same registration mechanism for
+sub-agents. In Claude Code, `agents/*.md` becomes hard permission-bounded sub-agents when installed as a
+Claude Code plugin. In Codex, the orchestration skill and repo instructions are directly reusable, but do
+not assume the Claude Code `tools:` boundary exists merely because Codex can read those Markdown files.
+If your Codex environment has registered matching sub-agents, use them; otherwise treat `agents/*.md` as
+portable role definitions and keep the maker/checker split explicit in the main session.
 
 ### Option A — Install as a Claude Code Plugin (recommended)
 

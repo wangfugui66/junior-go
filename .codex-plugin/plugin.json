@@ -1,0 +1,42 @@
+{
+  "name": "junior-go",
+  "version": "0.1.0",
+  "description": "A portable closed-loop development harness for junior engineers, with Claude Code and Codex entry points.",
+  "author": {
+    "name": "wangfugui66",
+    "url": "https://github.com/wangfugui66"
+  },
+  "homepage": "https://github.com/wangfugui66/junior-go",
+  "repository": "https://github.com/wangfugui66/junior-go",
+  "keywords": [
+    "dev-workflow",
+    "code-review",
+    "agents",
+    "junior-engineer",
+    "closed-loop",
+    "planning",
+    "verification",
+    "codex",
+    "claude-code"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "junior-go",
+    "shortDescription": "Closed-loop coding guidance for junior engineers",
+    "longDescription": "Use the junior-go loop from Codex through its orchestration skill, while preserving the Claude Code plugin and sub-agent layout for Claude Code users.",
+    "developerName": "wangfugui66",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/wangfugui66/junior-go",
+    "defaultPrompt": [
+      "Use the junior-go loop for this non-trivial code change.",
+      "Plan, implement, verify, and explain this change for a junior engineer.",
+      "Right-size the junior-go loop for this task."
+    ],
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}

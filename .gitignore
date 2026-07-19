@@ -2,9 +2,11 @@
 /*
 # ── 只放行这些可移植的规则/配置（敏感文件永不进仓库）──
 !/.gitignore
+!/AGENTS.md
 !/CLAUDE.md
 !/agents/
 !/.claude-plugin/
+!/.codex-plugin/
 !/skills/
 !/workflows/
 !/settings.json
