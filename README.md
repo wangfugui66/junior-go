@@ -120,6 +120,8 @@ Yes — the repo now has Codex entry points alongside the original Claude Code o
 - **Shared loop assets:** `agents/`, `skills/`, `workflows/`, and `memory/` remain the source files for the
   loop instead of being forked per harness.
 
+Codex loads project `.codex/` configuration only after you mark the repository as trusted.
+
 The Codex defaults save usage by reserving deeper reasoning for the one role that is explicitly paid to
 find plan flaws: `adversarial-architect` uses `gpt-5.6-sol` at `high`; requirement scouting, planning, and
 implementation use `gpt-5.6-terra` at `medium`; runtime verification and junior explanation use
